@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.env
+data/raw/
+data/interim/
+data/processed/
+artifacts/live/
+artifacts/*.log
+
+hiver_support_agent.egg-info/
