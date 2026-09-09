@@ -1,0 +1,270 @@
+k= 6  silhouette=0.0691
+k= 7  silhouette=0.0636
+k= 8  silhouette=0.0719
+k= 9  silhouette=0.0743
+k=10  silhouette=0.0799
+k=11  silhouette=0.0934
+k=12  silhouette=0.0841
+k=13  silhouette=0.0826
+k=14  silhouette=0.0932
+k=15  silhouette=0.0837
+k=16  silhouette=0.0874
+k=17  silhouette=0.0908
+k=18  silhouette=0.0992
+k=19  silhouette=0.0960
+k=20  silhouette=0.0961
+
+=== best k=18 (silhouette=0.0992) ===
+
+--- cluster 0 (n=165) ---
+  excuse me <USER> could you please put frank ocean - strawberry swing on your lovely app
+  @spotifycares App works exactly as intended, I fear. ☹️ It has none of the daily mixes I have in my other devices.
+  Dear <USER>, were you aware your Roku app sucks, and sucks hard? 🤔
+  @spotifycares when will your app be adapted to run natively on the iPad Pro 10.5 inch display?
+  @spotifycares Similar to bullet points 3 + 4, but in my case it happens whenever the app updates...(after the update is installed). This is 
+  Ini kenapa setiap buka app mesti log-in lagi? <USER>
+  @spotifycares Nope. There's no Clear button on the desktop app.
+  @spotifycares My God why wont you take my money?! You keep telling me my premium is about to expire but offer NO options in-app to update CC
+  @spotifycares Your app for windows mobile is very buggy. Any plans of updating it. Perhaps bringing your #w10 app over? Using #HP #elitex3 <
+  <USER> noticed on my desktop app that the release date is no longer showing, is this due to a random update?
+  @spotifycares I’m on iPhone 7 Plus. When I close the app by accident it starts the song all over but when I close the app and then come back
+  <USER> hey what’s the matter with the search function on your apple desktop app. It totally unresponsive
+
+--- cluster 1 (n=72) ---
+  @spotifycares Absolutely do it! Thank you!
+  @spotifycares put Super slimy up please and thank you
+  @spotifycares It worked thank you🙏👌🏻
+  @spotifycares Seems to have worked, thank you!
+  @spotifycares Thank you kindly! Cheers!
+  <USER> @spotifycares THANK YOU THANK YOU THANK YOU for finally releasing an Xbox One app 👌🏻👌🏻👌🏻
+  @spotifycares thank you :) x
+  @spotifycares THANK YOU
+  @spotifycares Thank you!❤️
+  @spotifycares Thank you!!
+  @spotifycares thank you!
+  @spotifycares Done, thank you! \m/
+
+--- cluster 2 (n=1145) ---
+  @spotifycares Unacceptable you are suppose to be a global Company yet you are not. Why advertise as one only to leave many countries out. #f
+  @spotifycares It's called Young Sinatra
+  @spotifycares That of course helped nothing and is no solution for all other users...
+  @spotifycares It's the heading for the "browse" section. It's in both Chinese and English because HK is bilingual. But it should be in Tradi
+  @spotifycares I have already followed these steps but no joy yet
+  @spotifycares where's sheep tho
+  @spotifycares Never mind. I guess is my net connection. :)
+  @spotifycares I have a lot of practice in turning it off. Sadly.
+  @spotifycares Seriously highly annoying that my ex shows up on my followers
+  @spotifycares I believe folks have been asking for this for a long while. Odd that it appears when I output the audio to my PS4.
+  @spotifycares United States last I checked
+  @spotifycares majid jordan
+
+--- cluster 3 (n=100) ---
+  @spotifycares Feeling a bit redundant here. The most up to date version for OSX and iOS
+  @spotifycares Samsung S7. Version '8.4.21.508'
+  @spotifycares iphone se and spotify version 8.4.22
+  @spotifycares Sigh. It's an LG SUNSET and the version is whatever comes up from Google playstore. Again, all updates have been done.
+  @spotifycares iPhone 7 Plus Spotify version 8.4.25.906
+  @spotifycares iPhone 5s iOS 9.3.1 Spotify version 8.4.24.506
+  @spotifycares It recently updated to the newest version of Spotify and I have it on a laptop.
+  @spotifycares Spotify version 8.4.20. Car is a 2013 Mazda CX-5
+  @spotifycares It happens on Wi-Fi and data. Also, I have the latest version of Spotify.
+  @spotifycares Windows 7 desktop, and it should be the latest version. I can give more specific details in 14 hours
+  @spotifycares PC, Windows 10 - I guess the version is "1.0.66.478.g1296534d" (that's all I could find in the about spotify bit)
+  @spotifycares Spotify version 1.0.65.320.gac7a8e02, macOS, MacBook Pro early 2015. Log file, if it helps: <URL>
+
+--- cluster 4 (n=91) ---
+  @spotifycares <USER> <USER> CC: <USER>
+  <USER> <USER> wack af
+  Finally ... fresh <USER> <USER> and <USER> is fucked
+  <USER> Mohon dibantu min <USER>
+  <USER> <USER> @spotifycares give me my money back!!!!!
+  why is Run this town Rihanna ft. jay Z not on Spotify? that's caused me severe depression <USER> <USER> <USER>
+  <USER> <USER> friendly reminder that you should consider this for the benefit of all Australian listeners ☺️
+  <USER> Haha ffs ... <USER> please get rid of this 🙈
+  <USER> @spotifycares <USER> Where could we vote? Can’t see the link
+  <USER> You get one day then I’m join <USER>
+  It's 2017 and I'm still waiting for <USER> to be on <USER>
+  <USER> <USER> @spotifycares If there was a link to donate money towards medical bills or a CTA to give blood or soooomething I could see thi
+
+--- cluster 5 (n=80) ---
+  @spotifycares Are college students the only ones applicable to the student discount? how about us High School students? 😢
+  @spotifycares Nah I'm wondering how to get verified as a student since I live in Canada! Can you help?
+  @spotifycares why was my student discount not applied this month???
+  <USER> My kids wanted premium but your student deals are only for college/ uni kids. Won't you consider the younger kids that are addicted t
+  @spotifycares The student price : 4,99 per month.
+  I gotta get on that <USER> and <USER> student deal
+  @spotifycares I'm a poor college student in need of a partial refund so I can buy food LOL
+  <USER> hi! my student approval is taking too long. Can you refund me my $4.99 charge so I can just buy premium?
+  @spotifycares can I use NUS Extra for my student discount or is it only unidays?
+  @spotifycares I just started my premium subscription again and thought it was the student one but it was £9.99. Can I get the extra £5 back?
+  @spotifycares I went to sign up with premium student but then i stopped when it asked for documents but my account has still been charged
+  @spotifycares I recently got a student discount but I'm on Spotify Preminum do I still have to pay 9.99 after Premium or will I be paying 4.
+
+--- cluster 6 (n=89) ---
+  <USER> #TAEMIN_Move album dropped and you helped me catch it^^ I’m a happy camper!
+  <USER> Can you please can Suzi Quatro’s Main Attraction album?
+  @spotifycares <URL> it's comes up as I will survive but look at the album title and cover.
+  What in the FUCK <USER> where is my <USER> album I’m gonna pop off
+  <USER> can I request for certain album that is not in Spotify?
+  @spotifycares my #1 most listened to album on Spotify is Dopamine by BØRNS and i didnt get a presale code WHY? livenation presale is awful
+  Would be very cool <USER> if under "New Releases" things were separated by Album vs. Single &lt;3
+  @spotifycares It appears to be normal on regular playlists. Cutting off the left and right album art is aesthetically poor and odd.
+  @spotifycares please bring back BTOB's Complete album :-(
+  <USER> Please upload the new Taylor Swift album "reputation". <USER> please!!!!
+  @spotifycares Album suggested would be better than artist suggested
+  @spotifycares Todrick Hall’s Straight Outta Oz album has cracking sounds throughout the whole album
+
+--- cluster 7 (n=185) ---
+  <USER> where'd Wait Until Tomorrow by Jimi Hendrix go???? <URL>
+  @spotifycares Yep it’s still the same. Here’s a screenshot for reference <URL>
+  Mereka pake bhs. Inggris, intinya sy mau berhenti langganan, tp gabisa masuk akun.. Udh itu aja gausah dilempar sana sini, klo bisa bantu <U
+  Perdo??? Damn <URL>
+  @spotifycares see top banner <URL>
+  @spotifycares I have no words! <URL>
+  @spotifycares The bass of this track is broken <URL>
+  @spotifycares Basically most of the Call Me By Your Name soundtrack 😬 <URL>
+  I’m supposedly listening to Redbone, but what I’m hearing is ‘I will survive’ by Gloria Gaynor. Interesting, wouldn’t you agree, <USER> <URL
+  @spotifycares The rapper to whom this tape actually belongs: <URL>
+  <USER> This is a screenshot <URL>
+  <USER> @spotifycares hold on, also happening with Pet Shop Boys. what is up?! <URL>
+
+--- cluster 8 (n=172) ---
+  @spotifycares after account was hacked in August, I still receive strange emails from you in Italian, regardless of my settings. Any idea?
+  @spotifycares how do I get my money back from your unauthorized charge to my iTunes account?
+  1/ I fought a hacker today. Spent an hour doing battle with him/her for my Spotify account. It was an epic back and forth.
+  <USER> It also tells me that my email is not associated with any account.
+  I hope <USER> verify my account today 🤘🏼
+  <USER> and no where in my subscriptions box nor my receipts box does it say I bought premium but it took the money out of my account.
+  <USER> i dont have genius although my account is premium
+  @spotifycares dear admin, spotify keep debit my cc and unfortunately i forgot my spotify account. could you help me?
+  @spotifycares tried helping my friend sign up with a gift code and I had forgotten to sign out of personal account before redeeming. can any
+  @spotifycares What is an incognito window? I'm actually trying to get into my account details. I have just joined premium family. The only a
+  @spotifycares my son has an account with you. He has passed away. How do I cancel his account? Is there a number I can call?
+  @spotifycares why is my premium account acting up???
+
+--- cluster 9 (n=56) ---
+  @spotifycares Why haven't I noticed a change in the shuffle then 😭
+  @spotifycares How can I change my 'similar artists'? It are Classic Composers. My music is improvised, ambient and neo Classic. Johan Bakker
+  @spotifycares It says they already decided not to change it - when it comes to money vs customer satisfaction, money always wins.
+  <USER> @spotifycares missing 2FA kind of surprise me. "Use strong pwds, change often, dont reuse" is all.
+  @spotifycares How can I change my account's country setting? Does it changes automatically depending on the ip address being used atm?
+  <USER> My Premium account (created with FB) is being hacked and being used right now! What can I do?! I can't block somone or change PW!!
+  @spotifycares yep, i get that, but the only option is Chile... do i need to move to another country to actually change my country?
+  @spotifycares Hey! Thanks again- it would be amazing if I could change my username to something a little more relevant than what I set it as
+  <USER> How can I change profile name and picture? I don't want to link with my Facebook profile.
+  @spotifycares I contacted you 2 months ago to change country and payment details. Why am I getting messages saying I haven't paid?
+  I do not like this <USER> change ....I don't even remember upgrading to this either tbh
+  <USER> please change that playlist format back its such a struggle to find one song I'm MAD CHANGE IT BACK
+
+--- cluster 10 (n=129) ---
+  @spotifycares Maybe something that could help me figure out how to get more followers
+  @spotifycares can you help bc the online tech chat was no help whatsoever
+  @spotifycares Yep. No help.
+  @spotifycares Any help lol?
+  <USER> @spotifycares help my man please
+  <USER> the help page on your website is not helpful. please help before my laptop goes out the window. family unable to except invitations
+  @spotifycares I’m freaking out and I need your help NOW! PLEASE GET BACK TO ME ASAP!!!!
+  @spotifycares and btw, we fill in the same address. :( please help.
+  @spotifycares Appreciate the help!
+  @spotifycares I cancelled my FB free a/c as i wanted to set up prem direct in order to keep my email. Several attempts failed- need help?
+  @spotifycares an unknown device has somehow connected to my spotify. Can I get some help?
+  <USER> why is it so difficult to find a contact number I can call to help with my login issues😩 #help #ineedmymusic
+
+--- cluster 11 (n=122) ---
+  That moment when you wonder if you should be tweeting to @spotifycares or <USER> because not a single song has played without interruption..
+  @spotifycares will the song be added eventually ?!
+  @spotifycares Still the same "song is unavailable" message when I do that
+  @spotifycares still no answer, do I have to delay my song ?
+  <USER>’s recently added filter is absolutely terrible. It literally won’t show the most recent song I added. <USER> @spotifycares
+  Dear <USER>, please fuck off with the Christmas song adverts. Thanks. Bye.
+  @spotifycares Plus it’s skipping every 10 seconds of each and every song
+  my <USER> random player is run by homeland security. It always randomly play the same song.
+  @spotifycares Can you instruct me for finding the clean versions for a song on #spotify ? Thanks!
+  @spotifycares Thanks! Also on my Nexus 5X the app has been dying lately sometimes usually when I hit share on a song
+  <USER> Can we get a “Send Song” feature so we can send music to our friends - turn Spotify a little more social 🤜🏾🤛🏿 appreciate you
+  @spotifycares seems you are the folks to ask. Can I save the playlist in a few clicks? Not song by song. <URL>
+
+--- cluster 12 (n=147) ---
+  <USER> baru bayar premium tgl 9 oktober kemarin, knpa sekarang ditagih lagi?
+  <USER> permisi, saya kmrn ingin berlangganan premium yg promo trus gagal, tp di kartu kredit saya sdh masuk transaksi. itu bagaimana ya?
+  Bakit yng convo namin nung pinag bilhan ko ng spotify ng premium nawala din tangina
+  Gimana caranya switch dari trial premium ke premium yah? <USER>
+  <USER> Saya sudah bayar untuk Premium kemarin, sudah ada tanda terimanya tapi kenapa masih free ya tulisannya? terimakasih <URL>
+  Idk how to upgrade to premium <USER>.
+  I finally decide to start paying for premium and the songs start skipping. Excuse me, <USER> #fixit
+  Naguguluhan ako sa spotify ha?? Kakabayad ko ga lang ng premium ulit? Tas sinendan ako ng email na oh no your spotify premium payment fail?🙄
+  <USER> I paid for premium and i'm not able to have it
+  <USER> library limit (10k songs) is a pretty big failure of premium streaming services. Shows the limits of subscription vs buying. 😕
+  <USER> I'm tryna buy premium for a year that shit possible? If so how much woe?
+  <USER> hi po bakit wala yung kanta ng Twice sa app nio nagbabayad po ako ng premium every month hahaha
+
+--- cluster 13 (n=165) ---
+  @spotifycares I just wanna talk...
+  @spotifycares Its just 1 the adds thats louder than the others. My ears are better than yours they are tremendous, people say iv the best ea
+  @spotifycares Haha it's just that I was very passionate about Evan and Jaron when I was 13, and I was NOT 13 in the 90s haha. Thanks!
+  @spotifycares <USER> Just checked , still unavailable
+  @spotifycares No worries! Ooh, just found some others errantly associated, stand by
+  @spotifycares Is sorted. Just a wee delay. Ta
+  @spotifycares none of those answers are appropriate, its a bug ive seen many complain about. so i just have to reinstall &amp; re save every
+  @spotifycares Just have chrome. And theres tons of security on this computer since it’s a work one. Seems to be more stable now
+  @spotifycares Happens again, I might be able to troubleshoot it but it should just work :( Honestly not in the mood to look into it. Please 
+  <USER> @spotifycares It's all back now....just listened to Gortex 😁
+  @spotifycares They aren’t locally imported… We just imported her iTunes playlist in Spotify so it found identical songs. Is that why they ar
+  @spotifycares I have and it just continues to show that it is loading. <URL>
+
+--- cluster 14 (n=71) ---
+  @spotifycares Why do you guys set that limit? That's pretty silly to be honest
+  @spotifycares Hey?Can You Guys Get TimeLife Stuff?How 'Bout if ya can maybe get QuietStorm..LottaGr8Music I ain't heard in awhile 🤩
+  @spotifycares you guys should have one of your staff members comment on <URL>
+  @spotifycares It's been 7 Months why should I believe you guys are doing anything about it?
+  @spotifycares Still waiting 😂 you guys are gonna be a whole day behind in UK at this rate. What gives
+  <USER> what’s up with your app lately guys? Songs cutting in and out. Taking me back to CD days when they used to skip!!
+  @spotifycares hey you want to tell me why you guys keep changing my membership to full price when I'm still paying full price for school?
+  @spotifycares Me again. Just wanted to follow up to see how you guys are getting along with putting in that filter? #ProveSpotifyCares
+  <USER> - it doesn't appear you guys have an #ExplicitContent filter? WTHeck? Even Zune had that, and it guards the galaxy!
+  @spotifycares is there an in built report function anywhere that i can use so i don't have to @ you guys on twitter to report something like
+  I'll never forgive <USER> for taking the albums Once (Nightwish) and Liebe Ist Für Alle Da (Rammstein) away. Fuck you guys.
+  <USER> can you guys please add more mixtapes of youngboy never broke again please?
+
+--- cluster 15 (n=50) ---
+  @spotifycares
+  @spotifycares No not at all
+  @spotifycares Thankyou .
+  @spotifycares America
+  @spotifycares Done.
+  @spotifycares 💜💜💜
+  @spotifycares No difference ☹️
+  @spotifycares Dming you now
+  @spotifycares Yasssssss
+  @spotifycares @spotifycares @spotifycares
+  @spotifycares Ctbf-it
+  @spotifycares Where ?
+
+--- cluster 16 (n=51) ---
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+  @spotifycares <URL>
+
+--- cluster 17 (n=110) ---
+  @spotifycares Mexico, thanks a lot!
+  @spotifycares I fixen it by sending to a Gmail adress and not Hotmail. Thanks
+  @spotifycares amazing! thanks so much :)
+  @spotifycares Awesome thanks
+  @spotifycares AWESOME THANKS 👌👌👌👌👌👌👌
+  @spotifycares Y'all are the best! Thanks!
+  @spotifycares Better, thanks!
+  @spotifycares Done! Thanks for looking into this.
+  @spotifycares Thanks for the response. 🙂
+  @spotifycares Oh well, thanks for at least telling me now...
+  @spotifycares This seems to have worked thanks!
+  @spotifycares Haha! thanks folks! 🕵️ 😋
+
