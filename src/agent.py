@@ -67,7 +67,7 @@ def run_agent(customer_text: str, retriever: BM25Retriever, generate: Generator)
         generated = generate(customer_text, retrieved)
     except (ConnectionError, TimeoutError, ValueError):
         return AgentResult(
-            intent="other_or_unclear",
+            intent="other",
             reply_draft="Thanks for getting in touch. A support specialist will review this.",
             evidence=(),
             route="escalate",

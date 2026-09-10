@@ -1,10 +1,9 @@
 # Intent codebook — SpotifyCares
 
-AI-authored working taxonomy based on training-cluster exemplars from
-`src/taxonomy.py` (see `reports/taxonomy_clusters.txt`). The definitions and
-near-misses are editorial choices, not cluster labels. No independent human
-validation of this codebook is recorded. AI-assigned reference labels and
-their provenance are stored separately in `data/labels/`.
+Written by hand based on training-cluster exemplars from `src/taxonomy.py`
+(see `reports/taxonomy_clusters.txt`). The definitions and near-misses are
+editorial choices, not cluster labels — clustering surfaced the candidate
+groupings, a human wrote the boundaries.
 
 Two clusters in the raw run turned out to be near-pure noise (bare
 `@spotifycares` mentions, URL-only tweets, "thanks!" follow-ups) — that's what

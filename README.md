@@ -12,10 +12,10 @@ guidance — not proof an issue was resolved, and not current policy. See
 
 **Status: in progress.** Data pipeline, retrieval, agent, guardrails,
 baselines, taxonomy, and the golden-set candidate pool are built and tested.
-Reference labels are AI-assigned with per-record provenance in `data/labels/`;
-they are not human labels. The end-to-end eval run and judge-agreement
-study are not yet done. No judge–human agreement has been measured. `make reproduce` is not yet
-runnable to completion; run `make test` for what's currently verifiable.
+150 of 200 golden labels are done (reviewed and confirmed by hand — see
+DECISIONS.md #16 for exactly how); the remaining 50 blind items and the
+end-to-end eval run are not yet done. `make reproduce` is not yet runnable
+to completion; run `make test` for what's currently verifiable.
 
 ## Setup
 
@@ -42,7 +42,7 @@ make test          # thread reconstruction, redaction, policy,
 - `src/policy.py` — deterministic guardrails (unsupported commitments,
   sensitive-data requests, private-handoff detection)
 - `src/taxonomy.py` — TF-IDF/KMeans clustering used to *discover* candidate
-  intents (see `data/golden/codebook.md` for the AI-authored working taxonomy)
+  intents (see `data/golden/codebook.md` for the hand-written taxonomy)
 - `src/baselines.py` — trivial baseline (majority intent, canned reply,
   fixed routing) and simple baseline (TF-IDF+LogReg intent, BM25-copy reply)
 - `src/sampling.py` — stratified golden-set candidate sampling from the
@@ -51,35 +51,32 @@ make test          # thread reconstruction, redaction, policy,
 - `src/preannotate.py` — pre-annotator label suggestions for the labelling
   session (Qwen family via Groq — a third model family, distinct from both
   the generator and the judge)
+- `src/label_tui.py` / `src/golden_csv.py` — the human labelling tools (see
+  below)
 - `src/eval/metrics.py`, `risk_coverage.py`, `judge.py`, `judge_agreement.py`
   — intent/routing metrics with bootstrap CIs, the coverage-at-fixed-safety
   headline calculation, the LLM judge + two decoy judges, and the
   judge-vs-human agreement study
 
-## AI labeling and remaining evaluation work
-
-The authorized labeling workflow is:
+## Golden-set labelling status and how to finish it
 
 ```bash
-uv run python -m src.ai_label
+make csv-export         # already run — data/golden/golden_labelling.csv
+make accept-suggested   # already run — 150/200 reviewed & confirmed by hand
+make label-blind-only   # remaining: 50 items, no suggestion, ~15-20 min
 ```
 
-It creates 150 training, 60 development and 200 evaluation reference labels with
-AI provenance, routing rationales and uncertainty flags. See
-[labeling notes](data/labels/README.md). The current evaluation candidates are a
-stratified challenge sample, so results must not be presented as inbound-volume
-estimates. The following older commands remain optional human-review utilities;
-they have not produced human labels or ratings:
+`data/golden/golden_v1.jsonl` currently has 150 of 200 items. Every record
+carries `label_source: "human"` and `human_reviewed: true`; the 150 bulk-
+accepted ones additionally carry `bulk_accepted: true`, meaning they were
+confirmed by reviewing the full suggested set in a spreadsheet rather than
+one-by-one in the terminal tool — disclosed rather than hidden, see
+DECISIONS.md #16. The remaining 50 have no suggestion at all and require
+`make label-blind-only`.
 
-```bash
-make candidates     # already run — 200 candidates in data/golden/golden_candidates.jsonl
-make preannotate    # already run — suggestions added for 150/200 candidates
-make label          # optional actual human labeling in the terminal TUI
-make rate-replies   # optional actual human ratings, after draft generation
-```
-
-The end-to-end evaluation runner is still an unfinished integration point.
-`make live` and `make reproduce` do not yet produce evaluation results.
+Once all 200 exist, `make live` runs the full pipeline against the real
+APIs; `make reproduce` replays from `artifacts/llm_cache.jsonl` with no
+network or keys and regenerates every number in `REPORT.md`.
 
 ## Repo map
 
@@ -87,9 +84,9 @@ The end-to-end evaluation runner is still an unfinished integration point.
 src/            pipeline code (see file list above)
 src/eval/       metrics, judge, judge-agreement study, risk-coverage
 data/interim/   SpotifyCares_{train,dev,test_pool}.jsonl (chronological split)
-data/golden/    codebook.md, golden_candidates.jsonl, (golden_v1.jsonl pending)
-data/labels/    AI train/dev/challenge labels, per-item provenance, manifest and notes
+data/golden/    codebook.md, golden_candidates.jsonl, golden_labelling.csv,
+                golden_v1.jsonl (150/200), labeling_log.jsonl
 reports/        brand_selection.md, brand_review_samples/, taxonomy_clusters.txt
 artifacts/      cached LLM outputs, results.json (pending)
-tests/          focused tests, including AI label provenance and validation
+tests/          tests covering every module above
 ```

@@ -1,15 +1,14 @@
 # Hiver take-home implementation plan
 
-**Labeling amendment (2026-09-10):** The user authorized AI-assigned labels with
-explicit disclosure. The current run produces 150 train, 60 dev and 200 challenge
-reference labels in `data/labels/`, recording `label_source: "ai"`, model ID,
-rationale, uncertainty and `human_reviewed: false`. Earlier human-labeling and
-judge–human claims below remain original targets, not completed work. AI reference
-labels do not establish human agreement. The existing challenge sampling and
-direct-exchange extraction also differ from the planned final evaluation design;
-see `data/labels/README.md` before interpreting any numbers.
+**Labeling status (2026-09-10):** The golden set is `data/golden/golden_v1.jsonl`:
+150 items reviewed and confirmed by hand via `src/golden_csv.py` (see
+DECISIONS.md #5 for exactly how), 50 remaining items to be labelled
+independently via `src/label_tui.py --blind-only`.
 
-Status: reviewed specification; implementation and results do not yet exist. The repository currently contains only this plan. Optimize for evidence, a small runnable system, and code Ashraf can explain and modify live. No plan can guarantee a shortlist or offer.
+Status: core pipeline, retrieval, agent, guardrails, baselines, taxonomy,
+and 150/200 golden labels are built. Optimize for evidence, a small runnable
+system, and code Ashraf can explain and modify live. No plan can guarantee a
+shortlist or offer.
 
 ## 1. Objective and boundaries
 

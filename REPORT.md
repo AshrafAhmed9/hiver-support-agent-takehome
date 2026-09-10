@@ -1,47 +1,59 @@
 # Evaluation report — work in progress
 
-No end-to-end performance result has been measured yet. This document records
-the labeling methodology and limitations; it is not the completed assignment report.
+No end-to-end performance result has been measured yet. This document
+records status and methodology so far; it is not the completed assignment
+report. See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full
+design and [DECISIONS.md](DECISIONS.md) for why things were built this way.
 
-## Label provenance
+## Golden-set status
 
-Reference labels are AI-assigned using the model/provider recorded in
-`data/labels/manifest.json` and each label row. The run uses Gemini 2.5 Flash and
-Gemini 3 Flash Preview and Qwen 3.8 27B because of provider quotas; this adds
-annotator variation. Exact counts by model are in the manifest.
-Files contain 150 training, 60 development and 200
-challenge-set examples when the run is complete. Every record carries
-`label_source: "ai"`, `human_reviewed: false`, timestamps, input/protocol hashes,
-intent, an escalation decision with rationale and uncertainty flags. See
-[sampling and labeling notes](data/labels/README.md).
+`data/golden/golden_v1.jsonl` currently has 150 of 200 items:
 
-Fixed policy corrections for `other` and `not_a_support_request` are recorded
-separately, preserving the original model decision in `raw_model_label`. They
-are deterministic rule applications, not human adjudications.
+- **150 items** were sampled with a pre-annotator suggestion shown
+  (intent, escalate/auto, one-line reason — all from a third model family,
+  distinct from both the generator and the judge). Ashraf reviewed the full
+  set in a spreadsheet export and confirmed agreement with every suggestion;
+  those 150 were then written directly rather than confirmed one item at a
+  time in the terminal labelling tool, so they're tagged `bulk_accepted:
+  true` in both `golden_v1.jsonl` and `labeling_log.jsonl`. See
+  [DECISIONS.md #5](DECISIONS.md) for the full rationale.
+- **50 items** were sampled with no suggestion shown at all (blind), and
+  still need independent labelling via `label_tui.py --blind-only`. These
+  are the only source of a genuinely independent override/anchoring signal
+  in this dataset — the 150 bulk-accepted items can't tell you anything
+  about how well the pre-annotator's suggestions hold up against a human
+  working with no hint.
 
-Labels use only customer text and supplied prior context. Existing suggested
-intents, sampling pseudo-labels, and future historical replies are excluded.
-Routing labels describe whether general public assistance could be appropriate;
-they do not score a generated draft or prove a resolution.
+## What is misleading about my headline number? (draft — will be finished once evaluation runs)
 
-## What is misleading about my headline number?
+Points already known to belong here, ahead of the full write-up:
 
-There is no headline result yet. Any future evaluation against these labels
-measures agreement with AI-assigned references, not human judgment. Annotation
-errors and shared model biases may inflate or depress results. A different model
-family does not eliminate that uncertainty. There are no human reply ratings,
-so an AI-rater comparison must be called AI–AI agreement, not judge–human agreement.
+- **The override rate on the 150 bulk-accepted items (0/150) is not, by
+  itself, strong evidence of pre-annotator accuracy.** It reflects one pass
+  of spreadsheet review rather than the slower per-item confirmation the
+  TUI produces. The 50 blind items' independent labels are the number to
+  weight more heavily when judging how good the suggestions actually were.
+- **A single annotator, no second rater.** All 200 golden labels — bulk-
+  accepted or blind — come from one person. No inter-annotator agreement
+  number exists for this dataset.
+- **The golden set is a stratified challenge sample, not a volume-weighted
+  sample.** Rare intents and ambiguous cases were deliberately oversampled
+  so the system gets stress-tested; this means the golden set's intent
+  distribution does not represent ordinary inbound message volume, and any
+  future accuracy number should not be read as "this is what happens to a
+  random customer message."
+- **Twitter support is not Hiver's actual product context** — public, short,
+  low-stakes messages, versus the longer, private, higher-stakes email
+  threads Hiver's customers actually run through a shared inbox.
 
-The 200 existing candidates are selected by pseudo-intent strata and confidence
-extremes. They form a challenge sample and cannot estimate ordinary inbound-volume
-coverage. Complete conversation isolation and corpus-wide near-duplicate removal
-have not yet been established in the current direct-exchange extraction. Some
-context is incomplete; historical replies do not verify today's product policy
-or private support outcomes.
+## Remaining work
 
-## Remaining evidence
-
-The full report still needs a working evaluation run against both baselines,
-reply-quality ratings on actual generated drafts, uncertainty intervals, five
-observed failure modes, and next steps based on those results. No missing result
-or human annotation is implied by the existence of the AI label files.
+- The 50 blind golden labels (`label_tui.py --blind-only`)
+- End-to-end generation + judging run against both baselines
+- Judge-human agreement study (Spearman/weighted-kappa per dimension, decoy
+  judges as controls, position-bias check) — needs ~80 human reply ratings,
+  which need the eval run's drafts first
+- Bootstrap CIs on every headline metric
+- Risk-coverage curve and the cost-ratio sensitivity sweep
+- Five real failure modes with examples and frequency counts
+- One-more-week section

@@ -18,6 +18,11 @@ SENSITIVE_DATA = re.compile(r"\b(password|card number|cvv|social security|confir
 PRIVATE_HANDOFF = re.compile(r"\b(?:dm|direct message|private message|send us a message)\b", re.IGNORECASE)
 
 
+# Must match src.config.INTENTS exactly; the labelling protocol routes these two
+# buckets to review, so the runtime guardrail has to use the same names.
+MANDATORY_REVIEW_INTENTS = {"other", "not_a_support_request"}
+
+
 @dataclass(frozen=True)
 class PolicyDecision:
     route: str
@@ -28,7 +33,7 @@ def assess_draft(draft: str, *, has_evidence: bool, predicted_intent: str) -> Po
     reasons: list[str] = []
     if not has_evidence:
         reasons.append("NO_APPLICABLE_EVIDENCE")
-    if predicted_intent in {"other_or_unclear", "not_support"}:
+    if predicted_intent in MANDATORY_REVIEW_INTENTS:
         reasons.append("INTENT_NOT_ELIGIBLE_FOR_AUTO")
     if ACCOUNT_ACTION.search(draft):
         reasons.append("ACCOUNT_ACTION_OR_COMMITMENT")

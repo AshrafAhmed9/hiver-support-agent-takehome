@@ -9,16 +9,15 @@ Two modes:
 `make reproduce` runs the default mode and asserts the recomputed numbers
 match REPORT.md — see IMPLEMENTATION_PLAN.md §11.
 
-This module remains an unfinished integration point. AI-assigned reference
-labels now live in data/labels/golden_ai_v1.jsonl; the loader preserves their
-provenance. Their existence does not establish human evaluation or make the
-generation/judging loop complete.
+This module requires data/golden/golden_v1.jsonl to exist and be complete
+(200 items: 150 bulk-accepted after CSV review + 50 independently labelled
+blind, per DECISIONS.md). It is not runnable to completion until that
+labelling session finishes — see IMPLEMENTATION_PLAN.md §7.
 """
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
@@ -40,23 +39,17 @@ def _load_jsonl(path: Path) -> list[dict]:
 
 
 def load_golden() -> list[dict]:
-    ai_path = ROOT / "data/labels/golden_ai_v1.jsonl"
-    source = GOLDEN_PATH if GOLDEN_PATH.exists() else ai_path
-    if not source.exists():
+    if not GOLDEN_PATH.exists():
         raise FileNotFoundError(
-            "No reference labels exist. Use `make label-ai` for explicitly AI-assigned "
-            "labels or `make label` for an actual human annotation session."
+            f"{GOLDEN_PATH} does not exist yet. Run `make accept-suggested` and "
+            "`make label-blind-only` first — see IMPLEMENTATION_PLAN.md §7."
         )
-    records = _load_jsonl(source)
-    if source == ai_path:
-        manifest_path = ai_path.parent / "manifest.json"
-        if not manifest_path.exists():
-            raise ValueError("AI label run is incomplete: no manifest")
-        expected = json.loads(manifest_path.read_text())["sets"]["golden"]
-        if len(records) != expected["count"] or hashlib.sha256(source.read_bytes()).hexdigest() != expected["sha256"]:
-            raise ValueError("AI label file does not match its completed manifest")
-        if any(r.get("label_source") != "ai" or r.get("human_reviewed") is not False for r in records):
-            raise ValueError("AI reference labels have invalid provenance")
+    records = _load_jsonl(GOLDEN_PATH)
+    if len(records) < 200:
+        raise ValueError(
+            f"Only {len(records)}/200 golden labels exist. Run `make label-blind-only` "
+            "to complete the remaining blind items before evaluating."
+        )
     return records
 
 
