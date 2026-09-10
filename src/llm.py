@@ -77,36 +77,80 @@ class CachedLLM:
         return LLMResponse(text=text, model=self.model, cached=False)
 
 
-def groq_call_fn(model_id: str):
-    """Build a call_fn against Groq's OpenAI-compatible chat completions API."""
-    from groq import Groq
+def groq_call_fn(model_id: str, max_retries: int = 12):
+    """Build a call_fn against Groq's OpenAI-compatible chat completions API.
+
+    Retries with backoff on rate limits. Two very different limit types show
+    up in a batch job like the eval run: RPM caps (seconds to clear) and a
+    daily tokens-per-day cap (minutes to partially replenish, per the
+    server's own `retryDelay`/message). The Groq client exposes the
+    suggested wait on RateLimitError's response when available; fall back to
+    a long linear backoff (up to 2 min/attempt, ~12 attempts) otherwise —
+    long enough to ride out a multi-minute TPD wait rather than give up.
+    """
+    import re as _re
+    import time as _time
+
+    from groq import Groq, RateLimitError
 
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
+    def _suggested_wait(exc: RateLimitError) -> float | None:
+        message = str(exc)
+        match = _re.search(r"try again in (\d+)m([\d.]+)s", message)
+        if match:
+            return int(match.group(1)) * 60 + float(match.group(2))
+        match = _re.search(r"try again in ([\d.]+)s", message)
+        return float(match.group(1)) if match else None
+
     def call(prompt: str, params: dict[str, Any]) -> str:
-        response = client.chat.completions.create(
-            model=model_id,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=params.get("temperature", 0.0),
-            max_tokens=params.get("max_tokens", 800),
-        )
-        return response.choices[0].message.content or ""
+        last_exc: Exception | None = None
+        for attempt in range(max_retries):
+            try:
+                response = client.chat.completions.create(
+                    model=model_id,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=params.get("temperature", 0.0),
+                    max_tokens=params.get("max_tokens", 800),
+                )
+                return response.choices[0].message.content or ""
+            except RateLimitError as exc:
+                last_exc = exc
+                wait = _suggested_wait(exc)
+                _time.sleep(wait + 2 if wait is not None else min(120, 15 * (attempt + 1)))
+        raise RuntimeError(f"Groq call failed after {max_retries} retries: {last_exc}") from last_exc
 
     return call
 
 
-def gemini_call_fn(model_id: str):
-    """Build a call_fn against the Gemini API."""
+def gemini_call_fn(model_id: str, max_retries: int = 6):
+    """Build a call_fn against the Gemini API.
+
+    Retries with exponential backoff on top of the SDK's own retry (which
+    gives up too quickly for a free-tier account under real load) — both
+    429 (rate limit) and transient 503 (model overloaded) are worth waiting
+    out for a batch job like this rather than failing the whole run.
+    """
+    import time as _time
+
     from google import genai
+    from google.genai import errors as genai_errors
 
     client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
     def call(prompt: str, params: dict[str, Any]) -> str:
-        response = client.models.generate_content(
-            model=model_id,
-            contents=prompt,
-            config={"temperature": params.get("temperature", 0.0)},
-        )
-        return response.text or ""
+        last_exc: Exception | None = None
+        for attempt in range(max_retries):
+            try:
+                response = client.models.generate_content(
+                    model=model_id,
+                    contents=prompt,
+                    config={"temperature": params.get("temperature", 0.0)},
+                )
+                return response.text or ""
+            except (genai_errors.ClientError, genai_errors.ServerError) as exc:
+                last_exc = exc
+                _time.sleep(min(60, 2**attempt * 2))
+        raise RuntimeError(f"Gemini call failed after {max_retries} retries: {last_exc}") from last_exc
 
     return call

@@ -17,7 +17,7 @@ import re
 from dataclasses import dataclass
 
 from src.config import JUDGE_MODEL
-from src.llm import CachedLLM, gemini_call_fn
+from src.llm import CachedLLM, groq_call_fn
 
 DIMENSIONS = ["groundedness", "resolution_helpfulness", "brand_voice", "safety"]
 
@@ -70,18 +70,27 @@ def _parse_json_score(text: str) -> JudgeScore:
     )
 
 
-def judge_reply(llm: CachedLLM, customer_text: str, evidence: list[str], reply: str) -> JudgeScore:
+def judge_reply(llm: CachedLLM, customer_text: str, evidence: list[str], reply: str, max_attempts: int = 3) -> JudgeScore:
     prompt = RUBRIC.format(
         customer_text=customer_text,
         evidence="\n".join(f"- {e}" for e in evidence) or "(none retrieved)",
         reply=reply,
     )
-    response = llm.generate(prompt, {"temperature": 0.0})
-    return _parse_json_score(response.text)
+    last_exc: Exception | None = None
+    for attempt in range(max_attempts):
+        # A malformed-JSON attempt must not be replayed from cache verbatim —
+        # bust the cache key with a nonce so a retry is a genuinely fresh call.
+        params = {"temperature": 0.0} if attempt == 0 else {"temperature": 0.0, "_retry_nonce": attempt}
+        response = llm.generate(prompt, params)
+        try:
+            return _parse_json_score(response.text)
+        except (ValueError, KeyError, TypeError) as exc:
+            last_exc = exc
+    raise ValueError(f"judge_reply: could not parse a valid score after {max_attempts} attempts: {last_exc}")
 
 
 def make_judge_llm(allow_live: bool = True) -> CachedLLM:
-    return CachedLLM(JUDGE_MODEL, gemini_call_fn(JUDGE_MODEL), allow_live=allow_live)
+    return CachedLLM(JUDGE_MODEL, groq_call_fn(JUDGE_MODEL), allow_live=allow_live)
 
 
 # --- decoy judges: controls for the judge-validation study (§9.5) ---

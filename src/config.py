@@ -1,17 +1,28 @@
 """Single place for model IDs, thresholds, and the cost model.
 
-Three different model families by construction: the generator, the judge, and
-the golden-set pre-annotator never share a family, so no single provider's
-bias can silently inflate every number in the report.
+Three different model families by construction: the generator (OpenAI-oss),
+the judge (Allam, SDAIA/IBM), and the golden-set pre-annotator (Qwen) never
+share a lineage, so no single model family's bias can silently inflate every
+number in the report. All three happen to be served by Groq — that's an
+infra choice, not a family choice, and doesn't reintroduce self-preference
+risk between generator and judge.
+
+Note on how the judge model was chosen: the original design used Gemini.
+Gemini's free tier caps at 20 requests/day per model project-wide —
+discovered when the eval run needed ~1,000+ judge calls. Moved to Groq's
+`groq/compound` next, which is a genuinely distinct family but is a slow,
+tool-using agentic model capped at 30 requests/minute — impractical for a
+batch eval. Landed on `allam-2-7b`: distinct family, plain fast chat
+completion, no RPM wall hit in testing. See DECISIONS.md.
 """
 
 from __future__ import annotations
 
 BRAND = "SpotifyCares"
 
-GENERATOR_MODEL = "openai/gpt-oss-120b"      # Groq — drafts replies
-JUDGE_MODEL = "gemini-2.5-pro"                # Gemini — scores reply quality
-PRE_ANNOTATOR_MODEL = "qwen/qwen3.8-27b"      # Groq (Qwen family) — golden-set label drafts
+GENERATOR_MODEL = "openai/gpt-oss-120b"      # Groq, OpenAI-oss family — drafts replies
+JUDGE_MODEL = "allam-2-7b"                    # Groq, Allam family (SDAIA/IBM) — scores reply quality
+PRE_ANNOTATOR_MODEL = "qwen/qwen3.8-27b"      # Groq, Qwen family — golden-set label drafts
 
 # Cost model for deriving the escalation threshold (§9.3 / §6 of the plan).
 # Units are arbitrary and relative to each other, not currency.

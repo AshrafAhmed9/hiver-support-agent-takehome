@@ -1,0 +1,216 @@
+{
+  "n_golden": 60,
+  "intent_accuracy": {
+    "agent": {
+      "point": 0.633,
+      "ci95": [
+        0.517,
+        0.75
+      ]
+    },
+    "simple_baseline_tfidf": {
+      "point": 0.383,
+      "ci95": [
+        0.267,
+        0.517
+      ]
+    },
+    "trivial_baseline_majority": {
+      "point": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "intent_macro_f1": {
+    "agent": 0.643,
+    "simple_baseline_tfidf": 0.324,
+    "trivial_baseline_majority": 0.0
+  },
+  "agent_confusion_matrix": {
+    "account_data_or_privacy": {
+      "account_data_or_privacy": 1,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 0,
+      "feature_request_or_product_feedback": 0,
+      "how_to_or_usage_question": 1,
+      "login_or_account_access": 0,
+      "not_a_support_request": 0,
+      "other": 0,
+      "playback_or_app_bug": 0
+    },
+    "billing_or_subscription_charge": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 8,
+      "content_availability_or_licensing": 0,
+      "feature_request_or_product_feedback": 0,
+      "how_to_or_usage_question": 0,
+      "login_or_account_access": 1,
+      "not_a_support_request": 0,
+      "other": 2,
+      "playback_or_app_bug": 0
+    },
+    "content_availability_or_licensing": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 7,
+      "feature_request_or_product_feedback": 0,
+      "how_to_or_usage_question": 0,
+      "login_or_account_access": 0,
+      "not_a_support_request": 0,
+      "other": 0,
+      "playback_or_app_bug": 1
+    },
+    "feature_request_or_product_feedback": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 1,
+      "feature_request_or_product_feedback": 4,
+      "how_to_or_usage_question": 0,
+      "login_or_account_access": 0,
+      "not_a_support_request": 0,
+      "other": 0,
+      "playback_or_app_bug": 0
+    },
+    "how_to_or_usage_question": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 2,
+      "feature_request_or_product_feedback": 1,
+      "how_to_or_usage_question": 2,
+      "login_or_account_access": 0,
+      "not_a_support_request": 0,
+      "other": 0,
+      "playback_or_app_bug": 0
+    },
+    "login_or_account_access": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 0,
+      "feature_request_or_product_feedback": 0,
+      "how_to_or_usage_question": 0,
+      "login_or_account_access": 6,
+      "not_a_support_request": 0,
+      "other": 0,
+      "playback_or_app_bug": 0
+    },
+    "not_a_support_request": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 1,
+      "feature_request_or_product_feedback": 0,
+      "how_to_or_usage_question": 0,
+      "login_or_account_access": 0,
+      "not_a_support_request": 2,
+      "other": 9,
+      "playback_or_app_bug": 2
+    },
+    "other": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 0,
+      "feature_request_or_product_feedback": 0,
+      "how_to_or_usage_question": 0,
+      "login_or_account_access": 0,
+      "not_a_support_request": 0,
+      "other": 4,
+      "playback_or_app_bug": 1
+    },
+    "playback_or_app_bug": {
+      "account_data_or_privacy": 0,
+      "billing_or_subscription_charge": 0,
+      "content_availability_or_licensing": 0,
+      "feature_request_or_product_feedback": 0,
+      "how_to_or_usage_question": 0,
+      "login_or_account_access": 0,
+      "not_a_support_request": 0,
+      "other": 0,
+      "playback_or_app_bug": 4
+    }
+  },
+  "routing": {
+    "agent": {
+      "precision": 0.926829268292683,
+      "recall": 0.7169811320754716,
+      "f1": 0.8085106382978724
+    },
+    "simple_baseline_confidence_route": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "trivial_escalate_all": {
+      "precision": 0.8833333333333333,
+      "recall": 1.0,
+      "f1": 0.9380530973451328
+    },
+    "trivial_auto_all": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    }
+  },
+  "reply_quality_judge_means": {
+    "agent": {
+      "groundedness": 4.87,
+      "resolution_helpfulness": 4.57,
+      "brand_voice": 4.87,
+      "safety": 5.0
+    },
+    "simple_baseline_bm25_copy": {
+      "groundedness": 5.0,
+      "resolution_helpfulness": 4.13,
+      "brand_voice": 4.97,
+      "safety": 5.0
+    },
+    "trivial_baseline_canned": {
+      "groundedness": 5,
+      "resolution_helpfulness": 3,
+      "brand_voice": 5,
+      "safety": 5,
+      "rationale": "Assuring the customer that a specialist will investigate and provide a response soon, while emphasizing the brand's commitment to follow up"
+    }
+  },
+  "headline_coverage_at_safety_target": {
+    "target_safe_auto_reply_rate": 0.95,
+    "threshold": 0.88,
+    "coverage": 0.016666666666666666,
+    "safe_auto_reply_rate": 1.0
+  },
+  "cost_ratio_sensitivity": [
+    {
+      "cost_ratio": 2.0,
+      "threshold": 0.62,
+      "coverage": 0.08333333333333333,
+      "safe_auto_reply_rate": 0.6
+    },
+    {
+      "cost_ratio": 4.0,
+      "threshold": 0.88,
+      "coverage": 0.016666666666666666,
+      "safe_auto_reply_rate": 1.0
+    },
+    {
+      "cost_ratio": 8.0,
+      "threshold": 0.88,
+      "coverage": 0.016666666666666666,
+      "safe_auto_reply_rate": 1.0
+    },
+    {
+      "cost_ratio": 12.0,
+      "threshold": 0.88,
+      "coverage": 0.016666666666666666,
+      "safe_auto_reply_rate": 1.0
+    },
+    {
+      "cost_ratio": 20.0,
+      "threshold": 0.88,
+      "coverage": 0.016666666666666666,
+      "safe_auto_reply_rate": 1.0
+    }
+  ],
+  "position_bias_sample_size": 30,
+  "rating_pool_size": 80,
+  "judge_parse_failures": []
+}
