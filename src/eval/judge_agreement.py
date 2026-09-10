@@ -158,12 +158,24 @@ def run(out_path: Path = ROOT / "artifacts/judge_agreement_report.json") -> dict
 
     from src.eval.judge import length_only_judge, random_judge
 
+    # Decoys are scored per human-rated item directly (not looked up from
+    # judge_scores.jsonl), so they naturally carry the same item_id +
+    # system as the human row and _match_key lines up 1:1 — set system
+    # explicitly rather than relying on a downstream .get() default.
     length_scores = [
-        {"item_id": h["item_id"], "scores": {d: length_only_judge(reply_pool.get(h["item_id"], "")).__dict__[d] for d in DIMENSIONS}}
+        {
+            "item_id": h["item_id"],
+            "system": h.get("system", ""),
+            "scores": {d: length_only_judge(reply_pool.get(h["item_id"], "")).__dict__[d] for d in DIMENSIONS},
+        }
         for h in human
     ]
     random_scores = [
-        {"item_id": h["item_id"], "scores": {d: random_judge(h["item_id"]).__dict__[d] for d in DIMENSIONS}}
+        {
+            "item_id": h["item_id"],
+            "system": h.get("system", ""),
+            "scores": {d: random_judge(h["item_id"]).__dict__[d] for d in DIMENSIONS},
+        }
         for h in human
     ]
 

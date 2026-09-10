@@ -29,15 +29,57 @@
   },
   "length_decoy": {
     "scorer": "length_only_decoy",
-    "n_items": 0,
-    "per_dimension": {},
+    "n_items": 80,
+    "per_dimension": {
+      "groundedness": {
+        "spearman_rho": 0.531,
+        "quadratic_weighted_kappa": 0.47,
+        "n": 80
+      },
+      "resolution_helpfulness": {
+        "spearman_rho": 0.51,
+        "quadratic_weighted_kappa": 0.502,
+        "n": 80
+      },
+      "brand_voice": {
+        "spearman_rho": 0.598,
+        "quadratic_weighted_kappa": 0.417,
+        "n": 80
+      },
+      "safety": {
+        "spearman_rho": 0.135,
+        "quadratic_weighted_kappa": 0.021,
+        "n": 80
+      }
+    },
     "reference_source": "human",
     "agreement_type": "judge\u2013human agreement"
   },
   "random_decoy": {
     "scorer": "random_decoy",
-    "n_items": 0,
-    "per_dimension": {},
+    "n_items": 80,
+    "per_dimension": {
+      "groundedness": {
+        "spearman_rho": -0.019,
+        "quadratic_weighted_kappa": 0.001,
+        "n": 80
+      },
+      "resolution_helpfulness": {
+        "spearman_rho": 0.091,
+        "quadratic_weighted_kappa": 0.067,
+        "n": 80
+      },
+      "brand_voice": {
+        "spearman_rho": -0.017,
+        "quadratic_weighted_kappa": 0.035,
+        "n": 80
+      },
+      "safety": {
+        "spearman_rho": 0.149,
+        "quadratic_weighted_kappa": 0.037,
+        "n": 80
+      }
+    },
     "reference_source": "human",
     "agreement_type": "judge\u2013human agreement"
   },
