@@ -131,9 +131,9 @@
   },
   "routing": {
     "agent": {
-      "precision": 0.926829268292683,
-      "recall": 0.7169811320754716,
-      "f1": 0.8085106382978724
+      "precision": 0.8536585365853658,
+      "recall": 0.7142857142857143,
+      "f1": 0.7777777777777778
     },
     "simple_baseline_confidence_route": {
       "precision": 0.0,
@@ -141,9 +141,9 @@
       "f1": 0.0
     },
     "trivial_escalate_all": {
-      "precision": 0.8833333333333333,
+      "precision": 0.8166666666666667,
       "recall": 1.0,
-      "f1": 0.9380530973451328
+      "f1": 0.8990825688073394
     },
     "trivial_auto_all": {
       "precision": 0.0,

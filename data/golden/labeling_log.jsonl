@@ -1,4 +1,4 @@
-{"id": "g_44312", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The vague question lacks context, requiring a human to identify the specific issue."}
+{"id": "g_44312", "final_intent": "not_a_support_request", "final_should_escalate": false, "final_escalate_reason": "The message is a vague question that can be answered with a generic clarification request; no human escalation is needed."}
 {"id": "g_2905908", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "User is unable to sign up due to a technical error."}
 {"id": "g_2931614", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer explicitly requests urgent action to fix an issue."}
 {"id": "g_2699557", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Multiple unauthorized charges require human intervention to process a refund."}
@@ -13,7 +13,7 @@
 {"id": "g_2834", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The vague question lacks context, requiring a human to identify the specific issue."}
 {"id": "g_1778460", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The message contains no specific issue details, making it impossible to route automatically."}
 {"id": "g_171118", "final_intent": "playback_or_app_bug", "final_should_escalate": false, "final_escalate_reason": "Clear technical bug report with specific version details and no abusive language."}
-{"id": "g_2910926", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "User is asking for a specific product location, which requires human verification."}
+{"id": "g_2910926", "final_intent": "content_availability_or_licensing", "final_should_escalate": false, "final_escalate_reason": "The user is asking a straightforward question about the availability of a specific EP, which can be answered by an automated response without human intervention."}
 {"id": "g_66022", "final_intent": "how_to_or_usage_question", "final_should_escalate": false, "final_escalate_reason": "Simple factual inquiry about launch timing requires no human intervention."}
 {"id": "g_2933212", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "Regional account creation issues require human verification to resolve."}
 {"id": "g_44310", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The message is too vague to identify the specific issue or intent."}
@@ -28,10 +28,10 @@
 {"id": "g_2820157", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "User is requesting a specific artist's discography, which is a content availability issue."}
 {"id": "g_500996", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Customer asks about specific promo eligibility after a long subscription gap."}
 {"id": "g_2520080", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "User is asking a subjective question about catalog availability, not reporting a technical issue."}
-{"id": "g_130898", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Customer is asking for specific pricing details that require human verification."}
+{"id": "g_130898", "final_intent": "billing_or_subscription_charge", "final_should_escalate": false, "final_escalate_reason": "The inquiry is a simple billing question that can be answered automatically."}
 {"id": "g_453468", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "Regional licensing restrictions require human intervention to verify specific catalog availability."}
 {"id": "g_633980", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Customer is requesting a refund for a premium account, requiring human intervention."}
-{"id": "g_2919417", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer explicitly declined assistance, indicating no further support is needed."}
+{"id": "g_2919417", "final_intent": "not_a_support_request", "final_should_escalate": false, "final_escalate_reason": "Customer declined further assistance and the message is not a support request; safe to auto-respond."}
 {"id": "g_629903", "final_intent": "other", "final_should_escalate": true, "final_escalate_reason": "Customer is complaining about ignored emails, indicating prior failed support attempts."}
 {"id": "g_166676", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "Account creation is blocked by conflicting email and Facebook login states."}
 {"id": "g_2950156", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": true, "final_escalate_reason": "Request is a feature suggestion, not a technical issue requiring human support."}
@@ -67,7 +67,7 @@
 {"id": "g_129754", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The message is incoherent and lacks specific account details, preventing automated triage."}
 {"id": "g_93894", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "Customer used severe profanity and reported critical data loss requiring human intervention."}
 {"id": "g_446909", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "Repeated login failures and a new CSRF error indicate a technical account lockout."}
-{"id": "g_2954685", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Request to add a specific artist's song to a playlist requires human action."}
+{"id": "g_2954685", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "User requests adding a specific song to a playlist, which requires human intervention."}
 {"id": "g_2828374", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Customer reports incorrect billing amount, requiring human intervention to resolve the charge discrepancy."}
 {"id": "g_2872002", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "Customer is demanding a specific album release with aggressive tone, requiring human intervention."}
 {"id": "g_567975", "final_intent": "playback_or_app_bug", "final_should_escalate": false, "final_escalate_reason": "Clear technical issue description allows for automated troubleshooting without human intervention."}
@@ -98,7 +98,7 @@
 {"id": "g_2871138", "final_intent": "content_availability_or_licensing", "final_should_escalate": false, "final_escalate_reason": "The query is a simple availability question with no complex account issues."}
 {"id": "g_2818845", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "User is correcting a factual error regarding artist identity and song attribution."}
 {"id": "g_95807", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The message is a polite acknowledgment with no actionable request or issue to resolve."}
-{"id": "g_497712", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer explicitly requested human contact, overriding automated handling."}
+{"id": "g_497712", "final_intent": "other", "final_should_escalate": true, "final_escalate_reason": "Customer explicitly asked to be contacted, which is an actionable request requiring human escalation."}
 {"id": "g_2844584", "final_intent": "device_or_platform_compatibility", "final_should_escalate": true, "final_escalate_reason": "Customer reports a device-specific issue requiring manual troubleshooting beyond automated scripts."}
 {"id": "g_130880", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": true, "final_escalate_reason": "Requesting a deleted page is a non-standard action requiring human verification."}
 {"id": "g_637710", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "Account security breach requiring immediate human intervention to restore access."}
@@ -107,7 +107,7 @@
 {"id": "g_563498", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Customer is asking a specific billing question that requires human verification."}
 {"id": "g_2917923", "final_intent": "not_a_support_request", "final_should_escalate": false, "final_escalate_reason": "Customer confirms issue is resolved, requiring no further action."}
 {"id": "g_703171", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The message is too vague to resolve automatically, requiring human context to identify the issue."}
-{"id": "g_86369", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": true, "final_escalate_reason": "User requested additional skips, which requires manual account adjustment."}
+{"id": "g_86369", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": false, "final_escalate_reason": "The request for more skips can be answered with a generic explanation of skip limits and upgrade options; it does not require manual account access."}
 {"id": "g_672183", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer explicitly requests human review of their previous reply."}
 {"id": "g_2825211", "final_intent": "how_to_or_usage_question", "final_should_escalate": false, "final_escalate_reason": "User is asking a general question about annual stats, not reporting a technical issue."}
 {"id": "g_108057", "final_intent": "playback_or_app_bug", "final_should_escalate": true, "final_escalate_reason": "Persistent mobile issue on specific iOS version requires human troubleshooting."}
@@ -144,7 +144,7 @@
 {"id": "g_2912488", "final_intent": "device_or_platform_compatibility", "final_should_escalate": true, "final_escalate_reason": "Cross-platform inconsistency suggests a complex technical issue requiring human investigation."}
 {"id": "g_2729330", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer references a recurring billing issue requiring manual account review."}
 {"id": "g_2951510", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": true, "final_escalate_reason": "User is requesting a new feature, which requires human review."}
-{"id": "g_575708", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The message is vague and lacks specific details, requiring human clarification to identify the issue."}
+{"id": "g_575708", "final_intent": "other", "final_should_escalate": true, "final_escalate_reason": "The message is an ambiguous request for help with no details, requiring human investigation to determine the issue."}
 {"id": "g_560982", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Technical error blocking family plan acceptance requires human troubleshooting."}
 {"id": "g_2871123", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "User is locked out of both linked accounts and cannot verify identity."}
 {"id": "g_174972", "final_intent": "playback_or_app_bug", "final_should_escalate": true, "final_escalate_reason": "User reports issue persists after reinstall, indicating a complex technical failure requiring human intervention."}
@@ -160,7 +160,7 @@
 {"id": "g_680797", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The user directs the issue to DMs, preventing automated triage of the actual problem."}
 {"id": "g_2970780", "final_intent": "playback_or_app_bug", "final_should_escalate": false, "final_escalate_reason": "Known iOS bug with call interruptions, so it's auto-resolved with a standard fix."}
 {"id": "g_622874", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": true, "final_escalate_reason": "Customer is threatening to cancel due to long-standing unresolved complaints."}
-{"id": "g_574263", "final_intent": "how_to_or_usage_question", "final_should_escalate": true, "final_escalate_reason": "The user is asking how to claim a specific offer, requiring human verification."}
+{"id": "g_574263", "final_intent": "how_to_or_usage_question", "final_should_escalate": false, "final_escalate_reason": "The user is asking a generic question about how to claim an offer, which can be answered with a standard automated response without needing a human agent."}
 {"id": "g_166663", "final_intent": "playback_or_app_bug", "final_should_escalate": true, "final_escalate_reason": "Vague complaint with no specific error details prevents automated triage."}
 {"id": "g_496155", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Billing discrepancy between the paid annual plan and the recurring monthly charge."}
 {"id": "g_2963335", "final_intent": "playback_or_app_bug", "final_should_escalate": false, "final_escalate_reason": "Known browser bug with no account-specific data to investigate."}
@@ -201,7 +201,7 @@
 {"id": "g_483958", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "Customer is in Australia, requiring regional support routing."}
 {"id": "g_748103", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer explicitly stated they will proceed with cancellation, requiring human intervention to retain."}
 {"id": "g_64363", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": false, "final_escalate_reason": "The query is a general feature request, not a specific account issue requiring human intervention."}
-{"id": "g_73747", "final_intent": "device_or_platform_compatibility", "final_should_escalate": true, "final_escalate_reason": "The message is too vague to determine the specific issue or intent."}
+{"id": "g_73747", "final_intent": "how_to_or_usage_question", "final_should_escalate": false, "final_escalate_reason": "The user is asking a simple compatibility question that can be answered automatically."}
 {"id": "g_44396", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The vague question lacks context, requiring a human to identify the specific issue."}
 {"id": "g_700404", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Repeated failed payment attempts are causing unintended charges, requiring immediate human intervention."}
 {"id": "g_2909841", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Billing discrepancy requires manual verification of student status and refund processing."}
@@ -211,7 +211,7 @@
 {"id": "g_2820159", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "Account linking issues require manual intervention to safely disassociate the Facebook login."}
 {"id": "g_1630485", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer is actively coordinating with another support channel, requiring human intervention to prevent conflicting responses."}
 {"id": "g_465266", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The message is too vague to route automatically, requiring human review to identify the specific issue."}
-{"id": "g_25418", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "The vague question lacks context, requiring a human to identify the specific issue."}
+{"id": "g_25418", "final_intent": "not_a_support_request", "final_should_escalate": false, "final_escalate_reason": "The message contains no actionable request, so no escalation is required."}
 {"id": "g_492435", "final_intent": "how_to_or_usage_question", "final_should_escalate": true, "final_escalate_reason": "The user is asking how to add a family member, which is a standard account management task."}
 {"id": "g_2924044", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer is actively waiting for a response, requiring immediate human attention."}
 {"id": "g_2920676", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer is using abusive language and demanding immediate service."}
@@ -240,8 +240,8 @@
 {"id": "g_662932", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": true, "final_escalate_reason": "Customer is requesting a discount or promotional offer, which requires human review."}
 {"id": "g_573770", "final_intent": "content_availability_or_licensing", "final_should_escalate": true, "final_escalate_reason": "User is asking why a specific artist is missing from the catalog."}
 {"id": "g_563502", "final_intent": "login_or_account_access", "final_should_escalate": true, "final_escalate_reason": "User reports account access issue requiring manual verification and recovery steps."}
-{"id": "g_2973967", "final_intent": "playback_or_app_bug", "final_should_escalate": true, "final_escalate_reason": "User is frustrated by repeated download failures during long trips."}
-{"id": "g_748194", "final_intent": "billing_or_subscription_charge", "final_should_escalate": true, "final_escalate_reason": "Customer is complaining about regional pricing discrimination, requiring human review."}
+{"id": "g_2973967", "final_intent": "playback_or_app_bug", "final_should_escalate": false, "final_escalate_reason": "Clear bug report about download failures; no urgent or account issue, can be handled with a standard auto\u2011reply."}
+{"id": "g_748194", "final_intent": "other", "final_should_escalate": true, "final_escalate_reason": "User complains promotions are unavailable in Quebec, which is a regional policy issue that requires human review."}
 {"id": "g_2916638", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": true, "final_escalate_reason": "Requesting a specific artist's addition is a product feature request, not a support issue."}
 {"id": "g_1778491", "final_intent": "not_a_support_request", "final_should_escalate": true, "final_escalate_reason": "Customer used profanity and demanded specific content, requiring human intervention."}
 {"id": "g_2022689", "final_intent": "feature_request_or_product_feedback", "final_should_escalate": false, "final_escalate_reason": "Request is a feature suggestion, not a technical issue requiring human intervention."}

@@ -88,23 +88,24 @@ that a lot of production systems actually run.
 
 | system | precision | recall | F1 |
 |---|---|---|---|
-| agent | 0.927 | 0.717 | 0.809 |
-| trivial: always escalate | 0.883 | 1.000 | 0.938 |
+| agent | 0.854 | 0.714 | 0.778 |
+| trivial: always escalate | 0.817 | 1.000 | 0.899 |
 | trivial: always auto | 0.000 | 0.000 | 0.000 |
 | simple baseline (confidence-based routing) | 0.000 | 0.000 | 0.000 |
 
 This table is the one place a reader could get misled if they only look at
 the first row. **"Always escalate" beats the agent on F1.** That's not a
 quirk of the metric: it's the correct mechanical result of a dataset where
-53 of 60 items should escalate. A system that escalates everything is
+49 of 60 items should escalate. A system that escalates everything is
 trivially high-recall, and F1 rewards that here more than it should. The
 number that actually matters is what happens on the auto side: of the
-7 items the agent routed to auto, all were correctly non-escalation-worthy,
-but its 71.7% recall on escalation means it's still missing real cases
-(see failure mode #2 below). "Always escalate" isn't a competitor worth
-losing to. It isn't a support agent, it's a null policy. But it's a real
-reminder that F1 alone doesn't tell you whether the risky failure mode
-(auto-answering something that needed a human) is under control.
+19 items the agent routed to auto, 5 were correctly non-escalation-worthy
+and 14 should have escalated and didn't, a 71.4% recall on escalation
+that's still missing a substantial fraction of real cases (see failure
+mode #1 below). "Always escalate" isn't a competitor worth losing to. It
+isn't a support agent, it's a null policy. But it's a real reminder that
+F1 alone doesn't tell you whether the risky failure mode (auto-answering
+something that needed a human) is under control.
 
 **Reply quality** (LLM judge mean scores, 1–5):
 
@@ -232,9 +233,9 @@ Pulled from the 60-item agent run, real examples, `item_id`s included so
 they're traceable back to `artifacts/predictions_agent.jsonl` and
 `data/golden/golden_v1.jsonl`.
 
-**1. Missed escalations, the safety-relevant one.** Of 53 items in the
-eval set that should escalate, the agent auto-routed 15 of them (28%). Only
-3 items were over-escalated in the other direction. Examples: `g_141188`
+**1. Missed escalations, the safety-relevant one.** Of 49 items in the
+eval set that should escalate, the agent auto-routed 14 of them (29%). Only
+6 items were over-escalated in the other direction. Examples: `g_141188`
 ("nasan na yung #reputation album ha 😒", a missing-content complaint in
 Tagalog, auto'd), `g_2865505` ("STOP DELETING MY DAILY MIXES!", an angry
 capitalized complaint, auto'd), `g_1593811` (a detailed complaint about a
