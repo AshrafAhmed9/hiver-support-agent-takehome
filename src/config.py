@@ -1,11 +1,10 @@
 """Single place for model IDs, thresholds, and the cost model.
 
-Three different model families by construction: the generator (OpenAI-oss),
-the judge (Allam, SDAIA/IBM), and the golden-set pre-annotator (Qwen) never
-share a lineage, so no single model family's bias can silently inflate every
-number in the report. All three happen to be served by Groq — that's an
-infra choice, not a family choice, and doesn't reintroduce self-preference
-risk between generator and judge.
+Two different model families by construction: the generator (OpenAI-oss)
+and the judge (Allam, SDAIA/IBM) never share a lineage, so no single model
+family's bias can silently inflate every number in the report. Both happen
+to be served by Groq — that's an infra choice, not a family choice, and
+doesn't reintroduce self-preference risk between generator and judge.
 
 Note on how the judge model was chosen: the original design used Gemini.
 Gemini's free tier caps at 20 requests/day per model project-wide —
@@ -22,7 +21,6 @@ BRAND = "SpotifyCares"
 
 GENERATOR_MODEL = "openai/gpt-oss-120b"      # Groq, OpenAI-oss family — drafts replies
 JUDGE_MODEL = "allam-2-7b"                    # Groq, Allam family (SDAIA/IBM) — scores reply quality
-PRE_ANNOTATOR_MODEL = "qwen/qwen3.8-27b"      # Groq, Qwen family — golden-set label drafts
 
 # Cost model for deriving the escalation threshold (§9.3 / §6 of the plan).
 # Units are arbitrary and relative to each other, not currency.

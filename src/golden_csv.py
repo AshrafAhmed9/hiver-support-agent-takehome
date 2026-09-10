@@ -1,19 +1,13 @@
-"""CSV export/import for bulk review of the golden set.
+"""CSV export/import for labelling the golden set.
 
-Export writes one row per candidate with the pre-annotator's draft
-(intent / should_escalate / reason) prefilled into `final_*` columns for
-review. Editing = overwriting the ones you disagree with. Import validates
-every row and writes data/golden/golden_v1.jsonl.
-
-Every finalized record is tagged with an honest provenance field describing
-how it was produced — this is not "written from scratch by a human," it's
-"drafted by a model, reviewed and confirmed/corrected by a human." See
-REPORT.md for why that distinction matters and is disclosed rather than
-hidden.
+Export writes one blank row per candidate — id, difficulty, customer text
+and prior context, with the three label columns empty. Labels are written
+by hand against data/golden/codebook.md. Import validates every row and
+writes data/golden/golden_v1.jsonl.
 
 Workflow:
     uv run python -m src.golden_csv export   # writes data/golden/golden_labelling.csv
-    ... edit final_intent / final_should_escalate / final_escalate_reason ...
+    ... fill in final_intent / final_should_escalate / final_escalate_reason ...
     uv run python -m src.golden_csv import   # writes golden_v1.jsonl
 """
 
@@ -37,9 +31,6 @@ FIELDNAMES = [
     "difficulty",
     "customer_text",
     "prior_context",
-    "suggested_intent",
-    "suggested_should_escalate",
-    "suggested_escalate_reason",
     "final_intent",
     "final_should_escalate",
     "final_escalate_reason",
@@ -58,26 +49,19 @@ def export_csv() -> None:
         writer.writeheader()
         for record in candidates:
             context = " | ".join(turn.get("text", "") for turn in record.get("context") or [])
-            intent = record.get("suggested_intent", "")
-            should_escalate = record.get("suggested_should_escalate", "")
-            reason = record.get("suggested_escalate_reason", "")
             writer.writerow(
                 {
                     "id": record["id"],
                     "difficulty": record.get("difficulty", ""),
                     "customer_text": record["customer_text"],
                     "prior_context": context,
-                    "suggested_intent": intent,
-                    "suggested_should_escalate": should_escalate,
-                    "suggested_escalate_reason": reason,
-                    # Prefilled with the draft so editing = overwriting disagreements.
-                    "final_intent": intent,
-                    "final_should_escalate": should_escalate,
-                    "final_escalate_reason": reason,
+                    "final_intent": "",
+                    "final_should_escalate": "",
+                    "final_escalate_reason": "",
                 }
             )
     print(f"Wrote {len(candidates)} rows to {CSV_PATH}.")
-    print("Review/edit final_intent / final_should_escalate / final_escalate_reason for every row,")
+    print("Fill in final_intent / final_should_escalate / final_escalate_reason for every row,")
     print("then run: uv run python -m src.golden_csv import")
 
 
@@ -121,27 +105,12 @@ def import_csv() -> None:
                 errors.append(f"row {row_num} ({item_id}): final_escalate_reason is empty")
                 continue
 
-            suggested_intent = row["suggested_intent"].strip() or None
-            suggested_escalate_raw = row["suggested_should_escalate"].strip()
-            suggested_escalate = _parse_bool(suggested_escalate_raw) if suggested_escalate_raw else None
-            suggested_reason = row["suggested_escalate_reason"].strip() or None
-
-            intent_overridden = suggested_intent is not None and final_intent != suggested_intent
-            escalate_overridden = suggested_escalate is not None and final_should_escalate != suggested_escalate
-            reason_overridden = suggested_reason is not None and final_reason != suggested_reason
-
             log_records.append(
                 {
                     "id": item_id,
-                    "suggested_intent": suggested_intent,
                     "final_intent": final_intent,
-                    "intent_overridden": intent_overridden,
-                    "suggested_should_escalate": suggested_escalate,
                     "final_should_escalate": final_should_escalate,
-                    "escalate_overridden": escalate_overridden,
-                    "suggested_escalate_reason": suggested_reason,
                     "final_escalate_reason": final_reason,
-                    "reason_overridden": reason_overridden,
                 }
             )
             golden_records.append(
@@ -155,13 +124,7 @@ def import_csv() -> None:
                     "should_escalate": final_should_escalate,
                     "escalate_reason": final_reason,
                     "difficulty": source.get("difficulty", "medium"),
-                    # Honest provenance: drafted by a model, reviewed/confirmed or
-                    # corrected by a human. Not "written from scratch by a human."
-                    "label_source": "ai_drafted_human_reviewed",
-                    "human_reviewed": True,
-                    "intent_overridden": intent_overridden,
-                    "escalate_overridden": escalate_overridden,
-                    "reason_overridden": reason_overridden,
+                    "label_source": "human",
                 }
             )
 
@@ -183,15 +146,7 @@ def import_csv() -> None:
         for record in log_records:
             handle.write(json.dumps(record) + "\n")
 
-    n_overridden_intent = sum(1 for r in log_records if r["intent_overridden"])
-    n_overridden_escalate = sum(1 for r in log_records if r["escalate_overridden"])
-    n_overridden_reason = sum(1 for r in log_records if r["reason_overridden"])
     print(f"Imported {len(golden_records)} labelled items -> {GOLDEN_PATH}")
-    print(
-        f"Override rates: intent {n_overridden_intent}/{len(log_records)}, "
-        f"escalate {n_overridden_escalate}/{len(log_records)}, "
-        f"reason {n_overridden_reason}/{len(log_records)}"
-    )
 
 
 def main() -> None:

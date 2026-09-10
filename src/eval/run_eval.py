@@ -3,8 +3,7 @@ metrics, judge scoring, risk-coverage, and writes artifacts/results.json —
 the single source of every number quoted in REPORT.md.
 
 Two modes:
-  --live    calls the real APIs (generator + judge + pre-annotator-free
-            weak labeller), populating the cache
+  --live    calls the real APIs (generator + judge), populating the cache
   (default) replays from artifacts/llm_cache.jsonl only, no network, no keys
 
 `make reproduce` runs the default mode and asserts the recomputed numbers

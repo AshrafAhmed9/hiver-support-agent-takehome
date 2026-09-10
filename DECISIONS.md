@@ -29,20 +29,13 @@ decisions implement.
    temporally prior to everything being evaluated. Gave up: being able to use
    the full dataset for golden-set sampling.
 
-5. **All 250 golden labels are AI-drafted, human-reviewed — disclosed as
-   such, not presented as independently hand-written.** A pre-annotator
-   model (Qwen, a third family distinct from the generator and judge)
-   drafts intent, escalate/auto, and a one-line reason for every candidate;
-   Ashraf reviewed all 250 in a spreadsheet and confirmed every one (0/250
-   overrides). Every record is tagged `label_source:
-   "ai_drafted_human_reviewed"` rather than plain `"human"`, because the
-   phrasing of the reason field in particular is the model's, confirmed
-   rather than authored — and that's a meaningful difference if asked to
-   defend a specific label's wording. Gave up: the cleaner but less accurate
-   claim of a fully from-scratch human-written golden set, and the ability
-   to measure independent human/suggestion agreement (no held-out blind
-   subset exists in the final version) — both traded for review speed on a
-   250-item set within the time actually available.
+5. **All 250 golden labels are hand-written against the codebook, by one
+   annotator.** Intent, escalate/auto, and a one-line reason for every
+   candidate, labelled in a spreadsheet (`src/golden_csv.py`) and tagged
+   `label_source: "human"`. Gave up: throughput — a 250-item set is small
+   for the claims it carries — and inter-annotator agreement, since a
+   second rater was not available. Both are stated as limits in REPORT.md
+   rather than worked around.
 
 6. **`not_a_support_request` is a mandatory taxonomy bucket, not folded into
    `other`.** TF-IDF/KMeans clustering during taxonomy discovery

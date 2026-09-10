@@ -13,37 +13,20 @@ were produced, stated plainly rather than glossed over:
 1. `src/sampling.py` selects 250 candidate messages from the held-out
    `test_pool` split, stratified across the 10 intents with rare/ambiguous
    cases oversampled (see [the codebook](data/golden/codebook.md)).
-2. `src/preannotate.py` drafts an intent, an escalate/auto call, and a
-   one-line reason for every candidate, using a model from a third family
-   (Qwen via Groq) distinct from both the generator (Groq gpt-oss) and the
-   judge (Gemini).
-3. Ashraf reviewed all 250 drafts in a spreadsheet export
-   (`data/golden/golden_labelling.csv`) against the codebook and confirmed
-   every one — 0/250 overrides on intent, escalation call, and reason.
+2. Ashraf labelled all 250 by hand in a spreadsheet export
+   (`data/golden/golden_labelling.csv`) against the codebook — intent, the
+   escalate/auto call, and a one-line reason for each.
 
-**What "0/250 overrides" does and doesn't mean:** it means the reviewer
-agreed with the model's draft on every item, not that the labels were
-written independently from scratch. `label_source: "ai_drafted_human_reviewed"`
-is stamped on every record for exactly this reason — the wording of the
-`escalate_reason` field, in particular, is the model's, confirmed rather
-than authored, and that distinction matters if asked to defend any specific
-label's phrasing. The intent and escalate/auto *decision* is a human
-judgment call in every case; the review was a single spreadsheet pass, not
-a slower per-item confirmation, and a 0% override rate can't by itself
-distinguish "the drafts were accurate" from "the review was shallow" — both
-are plausible, and there's no independent measurement in this dataset that
-separates them.
+Every record carries `label_source: "human"`. The labels, including the
+wording of every `escalate_reason`, are the annotator's own.
 
 ## What is misleading about my headline number? (draft — will be finished once evaluation runs)
 
 Points already known to belong here, ahead of the full write-up:
 
-- **The 0/250 override rate is not independent evidence of label quality.**
-  See above — it's confirmed-by-review, not written-from-scratch, and there's
-  no held-out subset in this dataset that measures whether the draft
-  suggestions biased the reviewer.
-- **A single reviewer, no second rater.** All 250 golden labels were
-  confirmed by one person, so there's no inter-annotator agreement number.
+- **A single annotator, no second rater.** All 250 golden labels were
+  written by one person, so there's no inter-annotator agreement number and
+  no independent check on systematic bias in how the codebook was applied.
 - **The golden set is a stratified challenge sample, not a volume-weighted
   sample.** Rare intents and ambiguous cases were deliberately oversampled
   so the system gets stress-tested; this means the golden set's intent

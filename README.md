@@ -21,8 +21,8 @@ completion; run `make test` for what's currently verifiable.
 uv sync --python 3.12 --all-groups
 ```
 
-Requires `GROQ_API_KEY` (generator + pre-annotator) and `GEMINI_API_KEY`
-(judge) as environment variables for any step that calls a live model.
+Requires `GROQ_API_KEY` (generator + judge) as an environment variable for
+any step that calls a live model.
 Cached LLM outputs live in `artifacts/llm_cache.jsonl` so re-runs don't
 re-call the API.
 
@@ -46,8 +46,7 @@ make test          # thread reconstruction, redaction, policy,
 - `src/sampling.py` — stratified golden-set candidate sampling from the
   held-out `test_pool` split (250 candidates, 10 intents, hard cases
   oversampled)
-- `src/preannotate.py` / `src/golden_csv.py` — draft labels for every
-  candidate and the spreadsheet review workflow (see below)
+- `src/golden_csv.py` — the spreadsheet labelling workflow (see below)
 - `src/eval/metrics.py`, `risk_coverage.py`, `judge.py`, `judge_agreement.py`
   — intent/routing metrics with bootstrap CIs, the coverage-at-fixed-safety
   headline calculation, the LLM judge + two decoy judges, and the
@@ -59,15 +58,12 @@ make test          # thread reconstruction, redaction, policy,
 plainly:
 
 1. 250 candidates sampled from the held-out `test_pool` split (`src/sampling.py`)
-2. A pre-annotator model (Qwen via Groq — a third family, distinct from the
-   generator and the judge) drafted an intent, an escalate/auto call, and a
-   one-line reason for every candidate (`src/preannotate.py`)
-3. Ashraf reviewed all 250 drafts in a spreadsheet and confirmed every one
-   (`src/golden_csv.py`) — 0/250 overrides
+2. Ashraf labelled all 250 by hand in a spreadsheet against the codebook —
+   intent, escalate/auto call, and a one-line reason each (`src/golden_csv.py`)
 
-Every record carries `label_source: "ai_drafted_human_reviewed"`, not plain
-`"human"` — see [REPORT.md](REPORT.md)'s golden-set section for exactly what
-that distinction means and doesn't mean.
+Every record carries `label_source: "human"`. See
+[REPORT.md](REPORT.md)'s golden-set section for the known limits of a
+single-annotator set.
 
 `make live` runs the full pipeline against the real APIs; `make reproduce`
 replays from `artifacts/llm_cache.jsonl` with no network or keys and

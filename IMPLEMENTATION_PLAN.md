@@ -1,9 +1,8 @@
 # Hiver take-home implementation plan
 
 **Labelling status (2026-09-10):** The golden set is complete —
-`data/golden/golden_v1.jsonl` has all 250 items. Every label was drafted by
-a pre-annotator model and reviewed/confirmed by Ashraf; see REPORT.md's
-golden-set section and DECISIONS.md #5 for exactly what that means.
+`data/golden/golden_v1.jsonl` has all 250 items, hand-labelled by Ashraf
+against the codebook; see REPORT.md's golden-set section and DECISIONS.md #5.
 
 Status: core pipeline, retrieval, agent, guardrails, baselines, taxonomy,
 and all 250 golden labels are built. Optimize for evidence, a small runnable

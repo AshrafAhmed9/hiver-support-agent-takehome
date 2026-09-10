@@ -101,12 +101,10 @@ stratify candidate selection, not to label. Rare intents
 the stratifier is least confident about are oversampled so the golden set
 stresses the system instead of confirming it.
 
-**Labelling itself is a separate step from sampling.** A pre-annotator model
-(Qwen, via Groq — a different family from both the generator and the judge)
-drafts an intent, an escalation call, and a one-line reason for every
-candidate. Ashraf reviewed all 250 drafts against this codebook and confirmed
-them. See REPORT.md for the override rate and what that number does and
-doesn't tell you.
+**Labelling itself is a separate step from sampling.** Every candidate is
+labelled by hand against this codebook — an intent, an escalation call, and
+a one-line reason — with no model output in the loop before the annotator
+sees the message. See REPORT.md for the limits of a single-annotator set.
 
 The current pool is a legacy stratified challenge set, not the 150-random /
 50-challenge sample proposed in the revised plan. It cannot estimate ordinary

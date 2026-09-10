@@ -24,9 +24,6 @@ taxonomy:
 candidates:
 	uv run python -m src.sampling
 
-preannotate:
-	uv run python -m src.preannotate
-
 csv-export:
 	uv run python -m src.golden_csv export
 

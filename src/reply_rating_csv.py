@@ -1,16 +1,11 @@
 """CSV export/import for the human reply-quality ratings that validate the
 LLM judge (§9.5 of the plan).
 
-Deliberately blind — no AI-drafted suggestion, unlike src/golden_csv.py.
-This file exists for exactly one purpose: measuring whether the LLM judge
-agrees with an independent human. If the rating were pre-drafted by another
-model, "judge vs. human" agreement would quietly become "judge vs. (a
-different AI, confirmed by a human)" — which is a materially weaker claim
-and undermines the specific evidence the brief asks for. Unlike the golden
-intent labels (where AI-assisted drafting + human confirmation is a
-legitimate, disclosed choice — see DECISIONS.md #5), this measurement only
-means what it claims to mean if there's no AI in the loop before the human
-sees it.
+Deliberately blind. This file exists for exactly one purpose: measuring
+whether the LLM judge agrees with an independent human. If the rating were
+pre-filled from any model output, "judge vs. human" agreement would quietly
+become "judge vs. a model, confirmed by a human" — a materially weaker
+claim than the evidence the brief asks for.
 
 Workflow:
     uv run python -m src.reply_rating_csv export
