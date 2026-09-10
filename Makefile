@@ -30,13 +30,17 @@ csv-export:
 csv-import:
 	uv run python -m src.golden_csv import
 
-# Full pipeline against cached LLM outputs only. No network, no API keys.
+# Replays the actual live run (60 of the 250 golden items — Groq's 200k
+# TPD quota doesn't stretch to 250 live generations in one sitting; see
+# DECISIONS.md and REPORT.md's "misleading headline number" section)
+# against cached LLM outputs only. No network, no API keys.
 reproduce:
-	uv run python -m src.eval.run_eval
+	uv run python -m src.eval.run_eval --sample-size 60
 
-# Full pipeline against live APIs, populating the cache.
+# Full pipeline against live APIs, populating the cache. Also defaults to
+# 60 items for the same quota reason; pass --sample-size to change it.
 live:
-	uv run python -m src.eval.run_eval --live
+	uv run python -m src.eval.run_eval --live --sample-size 60
 
 demo:
 	uv run python -m src.agent "$(MSG)"
