@@ -94,7 +94,7 @@ def _match_key(item_id: str, system: str) -> tuple[str, str]:
     raw item_id — matching on item_id alone silently collapses the two
     systems' judge scores for a shared id (last-write-wins) and drops every
     simple-baseline row as an unmatched id."""
-    base_id = item_id[: -len("_simple")] if item_id.endswith("_simple") else item_id
+    base_id = item_id.removesuffix("_simple")
     return (base_id, system)
 
 

@@ -1,0 +1,14 @@
+{
+  "brand": "SpotifyCares",
+  "source": "/Users/ashraf/Desktop/PROJECTS/Hiver/data/raw/twcs/twcs/twcs.csv",
+  "direct_brand_examples": 45180,
+  "episodes": 43846,
+  "partition_counts": {
+    "train": 26307,
+    "dev": 8769,
+    "test_pool": 8770
+  },
+  "episode_exclusions": {
+    "additional_message_in_component": 1334
+  }
+}
