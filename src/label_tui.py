@@ -71,12 +71,23 @@ def _prompt_intent(default_hint: str | None) -> str:
         print("Invalid input, try again.")
 
 
-def _prompt_yes_no(question: str) -> bool:
+def _prompt_yes_no(question: str, default_hint: bool | None = None) -> bool:
+    hint = "" if default_hint is None else f" (suggested: {'y' if default_hint else 'n'}, blank = accept)"
     while True:
-        raw = input(f"{question} [y/n]: ").strip().lower()
+        raw = input(f"{question}{hint} [y/n]: ").strip().lower()
+        if raw == "" and default_hint is not None:
+            return default_hint
         if raw in {"y", "n"}:
             return raw == "y"
         print("Enter y or n.")
+
+
+def _prompt_reason(default_hint: str | None) -> str:
+    if default_hint:
+        print(f"  suggested reason: {default_hint}")
+        raw = input("One-line reason (blank = accept suggestion): ").strip()
+        return raw if raw else default_hint
+    return input("One-line reason: ").strip()
 
 
 def run_intent_labelling(resume: bool) -> None:
@@ -90,26 +101,42 @@ def run_intent_labelling(resume: bool) -> None:
 
     for index, record in enumerate(remaining):
         _print_item(record, index, len(remaining))
-        suggestion = record.get("suggested_intent")
+        intent_suggestion = record.get("suggested_intent")
+        escalate_suggestion = record.get("suggested_should_escalate")
+        reason_suggestion = record.get("suggested_escalate_reason")
         blind = bool(record.get("blind"))
         if blind:
             print("(no suggestion shown — blind item)")
 
         started = time.monotonic()
-        final_intent = _prompt_intent(suggestion if not blind else None)
-        should_escalate = _prompt_yes_no("Should this escalate to a human?")
-        escalate_reason = input("One-line reason: ").strip()
+        final_intent = _prompt_intent(intent_suggestion if not blind else None)
+        should_escalate = _prompt_yes_no(
+            "Should this escalate to a human?", escalate_suggestion if not blind else None
+        )
+        escalate_reason = _prompt_reason(reason_suggestion if not blind else None)
         difficulty = record.get("difficulty", "medium")
         elapsed = round(time.monotonic() - started, 1)
 
-        overridden = (not blind) and suggestion is not None and final_intent != suggestion
+        intent_overridden = (not blind) and intent_suggestion is not None and final_intent != intent_suggestion
+        escalate_overridden = (
+            (not blind) and escalate_suggestion is not None and should_escalate != escalate_suggestion
+        )
+        reason_overridden = (
+            (not blind) and reason_suggestion is not None and escalate_reason != reason_suggestion
+        )
         _append_jsonl(
             LOG_PATH,
             {
                 "id": record["id"],
-                "suggested_intent": suggestion,
+                "suggested_intent": intent_suggestion,
                 "final_intent": final_intent,
-                "overridden": overridden,
+                "intent_overridden": intent_overridden,
+                "suggested_should_escalate": escalate_suggestion,
+                "final_should_escalate": should_escalate,
+                "escalate_overridden": escalate_overridden,
+                "suggested_escalate_reason": reason_suggestion,
+                "final_escalate_reason": escalate_reason,
+                "reason_overridden": reason_overridden,
                 "blind": blind,
                 "seconds": elapsed,
             },
@@ -127,6 +154,8 @@ def run_intent_labelling(resume: bool) -> None:
                 "escalate_reason": escalate_reason,
                 "difficulty": difficulty,
                 "blind": blind,
+                "label_source": "human",
+                "human_reviewed": True,
             },
         )
         print(f"Saved. ({elapsed}s)")
@@ -162,7 +191,8 @@ def run_reply_rating() -> None:
                 print("Enter 1-5.")
         _append_jsonl(
             RATINGS_PATH,
-            {"item_id": item["item_id"], "system": item["system"], "scores": scores},
+            {"item_id": item["item_id"], "system": item["system"], "scores": scores,
+             "rating_source": "human", "human_reviewed": True},
         )
         print("Saved.")
 

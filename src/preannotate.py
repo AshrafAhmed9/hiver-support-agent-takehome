@@ -1,15 +1,17 @@
 """Generates pre-annotator label suggestions for the golden candidate pool.
 
 Uses PRE_ANNOTATOR_MODEL (Qwen family via Groq — a different family from both
-the generator and the judge, see src/config.py) to suggest an intent for 150
-of the 200 candidates. The other 50 are held blind (no suggestion field) so
-the labelling session can measure anchoring bias: compare human-vs-suggestion
-agreement on the suggested items against human-vs-suggestion agreement on the
-blind items (computed post-hoc, blind items just never show a suggestion).
+the generator and the judge, see src/config.py) to suggest an intent AND an
+escalation call for 150 of the 200 candidates. The other 50 are held blind
+(no suggestion at all, for either field) so the labelling session can measure
+anchoring bias: compare human-vs-suggestion agreement on the suggested items
+against human-vs-suggestion agreement on the blind items (computed post-hoc,
+blind items just never show a suggestion).
 
 This step only writes suggestions to data/golden/golden_candidates.jsonl. It
 never writes to golden_v1.jsonl or labeling_log.jsonl — those only get
-written by a human running src/label_tui.py.
+written by a human running src/label_tui.py. The human is always free to
+override both fields; the suggestion is a starting point, not an answer.
 """
 
 from __future__ import annotations
@@ -44,12 +46,50 @@ Message: "{text}"
 
 Respond with only the intent label, nothing else."""
 
+ESCALATE_PROMPT_TEMPLATE = """You are deciding whether a proposed public reply to this @spotifycares
+customer support tweet could be safely auto-sent with NO human review and NO account access,
+or whether it needs a human to handle it.
+
+Escalate to a human (answer "escalate") if the message:
+- requires account-specific access, verification, or a refund/compensation/billing action
+- reports something that could be account security related (hacking, unauthorized access)
+- is ambiguous, sarcastic, or not really a clear support request
+- involves a promise the brand can't verify from a public tweet alone
+
+It's fine to auto-handle (answer "auto") if the message is a general how-to question or a
+known, generic troubleshooting issue (e.g. restart app, check app version) with no account
+action needed.
+
+Message: "{text}"
+
+Respond with only one word: "escalate" or "auto"."""
+
+REASON_PROMPT_TEMPLATE = """A customer support routing decision for this @spotifycares tweet was: {decision}.
+
+Message: "{text}"
+
+Write ONE short sentence (under 15 words) giving the concrete reason for that decision,
+in plain language a support-ops reviewer would write. No preamble, just the sentence."""
+
 
 def suggest_intent(llm: CachedLLM, text: str) -> str:
     prompt = PROMPT_TEMPLATE.format(intents="\n".join(f"- {i}" for i in INTENTS), text=text)
     response = llm.generate(prompt, {"temperature": 0.0})
     label = response.text.strip().lower().replace(" ", "_")
     return label if label in INTENTS else "other"
+
+
+def suggest_escalate(llm: CachedLLM, text: str) -> bool:
+    prompt = ESCALATE_PROMPT_TEMPLATE.format(text=text)
+    response = llm.generate(prompt, {"temperature": 0.0})
+    return "escalate" in response.text.strip().lower()
+
+
+def suggest_reason(llm: CachedLLM, text: str, should_escalate: bool) -> str:
+    decision = "escalate to a human" if should_escalate else "auto-handle with no human review"
+    prompt = REASON_PROMPT_TEMPLATE.format(decision=decision, text=text)
+    response = llm.generate(prompt, {"temperature": 0.0})
+    return response.text.strip().strip('"')
 
 
 def annotate(blind_fraction: float = 0.25, seed: int = RANDOM_SEED, allow_live: bool = True) -> None:
@@ -65,8 +105,14 @@ def annotate(blind_fraction: float = 0.25, seed: int = RANDOM_SEED, allow_live: 
         record["blind"] = record["id"] in blind_ids
         if record["blind"]:
             record["suggested_intent"] = None
+            record["suggested_should_escalate"] = None
+            record["suggested_escalate_reason"] = None
         else:
             record["suggested_intent"] = suggest_intent(llm, record["customer_text"])
+            record["suggested_should_escalate"] = suggest_escalate(llm, record["customer_text"])
+            record["suggested_escalate_reason"] = suggest_reason(
+                llm, record["customer_text"], record["suggested_should_escalate"]
+            )
 
     with CANDIDATES_PATH.open("w", encoding="utf-8") as handle:
         for record in records:

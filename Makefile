@@ -31,6 +31,13 @@ preannotate:
 label:
 	uv run python -m src.label_tui
 
+# Explicitly AI-assigned references; never human labels.
+label-ai:
+	uv run python -m src.ai_label --provider groq --model qwen/qwen3.8-27b --batch-size 5 --max-output-tokens 1000
+
+check-labels:
+	uv run python -m src.ai_label --validate
+
 rate-replies:
 	uv run python -m src.label_tui --reply-rating
 

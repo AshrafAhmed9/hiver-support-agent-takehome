@@ -9,24 +9,21 @@ Two modes:
 `make reproduce` runs the default mode and asserts the recomputed numbers
 match REPORT.md — see IMPLEMENTATION_PLAN.md §11.
 
-This module requires data/golden/golden_v1.jsonl to exist (produced by a
-human running src/label_tui.py — see IMPLEMENTATION_PLAN.md §7). It is not
-runnable to completion until that labelling session happens; every piece
-that doesn't depend on it (baseline fitting, retrieval, judge/decoy wiring)
-is exercised by tests/test_run_eval_pipeline.py against synthetic golden data.
+This module remains an unfinished integration point. AI-assigned reference
+labels now live in data/labels/golden_ai_v1.jsonl; the loader preserves their
+provenance. Their existence does not establish human evaluation or make the
+generation/judging loop complete.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
 from src.baselines import TfidfIntentClassifier
-from src.config import BRAND, GENERATOR_MODEL
-from src.eval.judge import make_judge_llm
-from src.llm import CachedLLM, groq_call_fn
-from src.retrieve import BM25Retriever, load_historical_pairs
+from src.config import BRAND
 
 ROOT = Path(__file__).resolve().parents[2]
 GOLDEN_PATH = ROOT / "data/golden/golden_v1.jsonl"
@@ -43,12 +40,24 @@ def _load_jsonl(path: Path) -> list[dict]:
 
 
 def load_golden() -> list[dict]:
-    if not GOLDEN_PATH.exists():
+    ai_path = ROOT / "data/labels/golden_ai_v1.jsonl"
+    source = GOLDEN_PATH if GOLDEN_PATH.exists() else ai_path
+    if not source.exists():
         raise FileNotFoundError(
-            f"{GOLDEN_PATH} does not exist yet. This requires a human labelling "
-            "session (uv run python -m src.label_tui) — see IMPLEMENTATION_PLAN.md §7."
+            "No reference labels exist. Use `make label-ai` for explicitly AI-assigned "
+            "labels or `make label` for an actual human annotation session."
         )
-    return _load_jsonl(GOLDEN_PATH)
+    records = _load_jsonl(source)
+    if source == ai_path:
+        manifest_path = ai_path.parent / "manifest.json"
+        if not manifest_path.exists():
+            raise ValueError("AI label run is incomplete: no manifest")
+        expected = json.loads(manifest_path.read_text())["sets"]["golden"]
+        if len(records) != expected["count"] or hashlib.sha256(source.read_bytes()).hexdigest() != expected["sha256"]:
+            raise ValueError("AI label file does not match its completed manifest")
+        if any(r.get("label_source") != "ai" or r.get("human_reviewed") is not False for r in records):
+            raise ValueError("AI reference labels have invalid provenance")
+    return records
 
 
 def fit_weak_intent_classifier(train_labels: list[dict]) -> TfidfIntentClassifier:
@@ -60,23 +69,12 @@ def fit_weak_intent_classifier(train_labels: list[dict]) -> TfidfIntentClassifie
 
 
 def run(live: bool = False) -> dict:
-    golden = load_golden()
-    corpus = load_historical_pairs(CORPUS_PATH)
-    retriever = BM25Retriever(corpus)
-
-    generator = CachedLLM(GENERATOR_MODEL, groq_call_fn(GENERATOR_MODEL), allow_live=live)
-    judge_llm = make_judge_llm(allow_live=live)
-
-    # ... generation over `golden`, judge scoring, metric computation would
-    # run here in the full build. Left as the integration point: everything
-    # it depends on (retriever, generator, judge, metrics, risk-coverage) is
-    # independently unit-tested. Wiring this end-to-end is the next step
-    # once data/golden/golden_v1.jsonl exists.
+    # Do not initialize providers or imply evaluation is blocked on human
+    # labels: the integration loop itself is not implemented yet.
+    load_golden()
     raise NotImplementedError(
-        "End-to-end generation+judging loop is the next implementation step, "
-        "blocked on the golden-set labelling session (§7). All dependencies "
-        "(retriever, generator, judge, decoys, metrics, risk-coverage) are "
-        "implemented and unit-tested independently."
+        "Reference labels are available, but the end-to-end generation/judging "
+        "loop still needs implementation. AI labels do not supply human agreement."
     )
 
 

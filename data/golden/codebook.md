@@ -1,10 +1,10 @@
 # Intent codebook — SpotifyCares
 
-Written by hand after reading TF-IDF/KMeans cluster exemplars from `src/taxonomy.py`
-run on 3,000 sampled training-split messages (best k=18 by silhouette; see
-`reports/taxonomy_clusters.txt` for the raw run). Clustering surfaced the
-candidate groupings below; the definitions, boundaries, and near-misses are a
-human judgment call, not the clustering output itself.
+AI-authored working taxonomy based on training-cluster exemplars from
+`src/taxonomy.py` (see `reports/taxonomy_clusters.txt`). The definitions and
+near-misses are editorial choices, not cluster labels. No independent human
+validation of this codebook is recorded. AI-assigned reference labels and
+their provenance are stored separately in `data/labels/`.
 
 Two clusters in the raw run turned out to be near-pure noise (bare
 `@spotifycares` mentions, URL-only tweets, "thanks!" follow-ups) — that's what
@@ -94,11 +94,18 @@ everywhere downstream.
 ## Sampling note for the golden set (§7 of the plan)
 
 Golden examples are drawn **only** from `data/interim/SpotifyCares_test_pool.jsonl`
-(the latest, held-out chronological third — never seen by the retrieval corpus
+(the latest 20% of the chronological episode split — never part of the retrieval corpus
 or by the pre-annotator's few-shot examples). Sampling is stratified across
 the 10 intents above using a first-pass cheap classifier (TF-IDF nearest
 centroid against the codebook examples) purely to stratify, not to label —
-final labels come from the hybrid human process in `src/label_tui.py`. Rare
+reference labels now come from `src/ai_label.py` and are explicitly AI-assigned. Rare
 intents (`account_data_or_privacy`, `device_or_platform_compatibility`) and
 messages the stratifier is least confident about are oversampled so the
 golden set stresses the system instead of confirming it.
+
+The current pool is a legacy stratified challenge set, not the 150-random /
+50-challenge sample proposed in the revised plan. It cannot estimate ordinary
+inbound-volume coverage. The source partition is the latest 20%, not a third.
+Current extraction uses direct exchanges, so full connected-component isolation
+and near-duplicate removal have not been established. AI labels do not repair
+those sampling limitations. See `data/labels/README.md` for current provenance.

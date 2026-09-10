@@ -12,9 +12,9 @@ guidance — not proof an issue was resolved, and not current policy. See
 
 **Status: in progress.** Data pipeline, retrieval, agent, guardrails,
 baselines, taxonomy, and the golden-set candidate pool are built and tested.
-The golden-set labelling session, the end-to-end eval run, judge-agreement
-study, and `REPORT.md` are not yet done — those require a human labelling
-pass (~3-4 hours) that hasn't happened yet. `make reproduce` is not yet
+Reference labels are AI-assigned with per-record provenance in `data/labels/`;
+they are not human labels. The end-to-end eval run and judge-agreement
+study are not yet done. No judge–human agreement has been measured. `make reproduce` is not yet
 runnable to completion; run `make test` for what's currently verifiable.
 
 ## Setup
@@ -31,7 +31,7 @@ re-call the API.
 ## What's built and tested
 
 ```bash
-make test          # 27 tests: thread reconstruction, redaction, policy,
+make test          # thread reconstruction, redaction, policy,
                     # retrieval, metrics, cost model, baselines, sampling
 ```
 
@@ -42,7 +42,7 @@ make test          # 27 tests: thread reconstruction, redaction, policy,
 - `src/policy.py` — deterministic guardrails (unsupported commitments,
   sensitive-data requests, private-handoff detection)
 - `src/taxonomy.py` — TF-IDF/KMeans clustering used to *discover* candidate
-  intents (see `data/golden/codebook.md` for the hand-written taxonomy)
+  intents (see `data/golden/codebook.md` for the AI-authored working taxonomy)
 - `src/baselines.py` — trivial baseline (majority intent, canned reply,
   fixed routing) and simple baseline (TF-IDF+LogReg intent, BM25-copy reply)
 - `src/sampling.py` — stratified golden-set candidate sampling from the
@@ -56,18 +56,30 @@ make test          # 27 tests: thread reconstruction, redaction, policy,
   headline calculation, the LLM judge + two decoy judges, and the
   judge-vs-human agreement study
 
-## What's next (requires a human)
+## AI labeling and remaining evaluation work
+
+The authorized labeling workflow is:
+
+```bash
+uv run python -m src.ai_label
+```
+
+It creates 150 training, 60 development and 200 evaluation reference labels with
+AI provenance, routing rationales and uncertainty flags. See
+[labeling notes](data/labels/README.md). The current evaluation candidates are a
+stratified challenge sample, so results must not be presented as inbound-volume
+estimates. The following older commands remain optional human-review utilities;
+they have not produced human labels or ratings:
 
 ```bash
 make candidates     # already run — 200 candidates in data/golden/golden_candidates.jsonl
 make preannotate    # already run — suggestions added for 150/200 candidates
-make label          # ~2-3 hours: intent + escalation labelling in the terminal TUI
-make rate-replies   # ~1 hour, after an initial eval run produces drafts to rate
+make label          # optional actual human labeling in the terminal TUI
+make rate-replies   # optional actual human ratings, after draft generation
 ```
 
-Then `make live` runs the full pipeline against the real APIs and populates
-the cache; `make reproduce` replays from that cache with no network or keys
-and regenerates every number that will appear in `REPORT.md`.
+The end-to-end evaluation runner is still an unfinished integration point.
+`make live` and `make reproduce` do not yet produce evaluation results.
 
 ## Repo map
 
@@ -76,7 +88,8 @@ src/            pipeline code (see file list above)
 src/eval/       metrics, judge, judge-agreement study, risk-coverage
 data/interim/   SpotifyCares_{train,dev,test_pool}.jsonl (chronological split)
 data/golden/    codebook.md, golden_candidates.jsonl, (golden_v1.jsonl pending)
+data/labels/    AI train/dev/challenge labels, per-item provenance, manifest and notes
 reports/        brand_selection.md, brand_review_samples/, taxonomy_clusters.txt
 artifacts/      cached LLM outputs, results.json (pending)
-tests/          27 tests covering every module above
+tests/          focused tests, including AI label provenance and validation
 ```

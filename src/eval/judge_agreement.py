@@ -13,8 +13,9 @@ decoy. If the real judge doesn't clearly beat length-only, that's reported as
 the honest result, not smoothed over. Also reports a position-bias flip rate
 from the evidence-order-swap re-judging pass.
 
-judge-human agreement, whatever it turns out to be, is the ceiling on every
-reply-quality number reported elsewhere in the eval.
+Reference provenance determines the interpretation: AI-rated references measure
+AI–AI agreement, and only actual human ratings measure judge–human agreement.
+Agreement is a reliability diagnostic, not a mathematical ceiling on quality.
 """
 
 from __future__ import annotations
@@ -89,6 +90,11 @@ def agreement_report(human: list[dict], scorer: list[dict], scorer_name: str) ->
     """human, scorer: lists of {"item_id": ..., "scores": {dim: 1-5}} aligned by item_id."""
     scorer_by_id = {s["item_id"]: s["scores"] for s in scorer}
     report: dict = {"scorer": scorer_name, "n_items": 0, "per_dimension": {}}
+    sources = {r.get("rating_source", r.get("label_source", "unknown")) for r in human}
+    report["reference_source"] = next(iter(sources)) if len(sources) == 1 else "mixed_or_missing"
+    report["agreement_type"] = {
+        "human": "judge–human agreement", "ai": "AI–AI agreement"
+    }.get(report["reference_source"], "unverified-reference agreement")
     paired_ids = [h["item_id"] for h in human if h["item_id"] in scorer_by_id]
     report["n_items"] = len(paired_ids)
     for dim in DIMENSIONS:
@@ -122,6 +128,8 @@ def position_bias_flip_rate(original: list[dict], swapped: list[dict]) -> float:
 
 def run(out_path: Path = ROOT / "artifacts/judge_agreement_report.json") -> dict:
     human = _load_jsonl(RATINGS_PATH)
+    if not human:
+        raise ValueError("No reply ratings exist. Message labels cannot substitute for reply-quality ratings.")
     judge_scores = _load_jsonl(JUDGE_SCORES_PATH)
     swapped = _load_jsonl(SWAPPED_SCORES_PATH)
     reply_pool = {r["item_id"]: r["reply_draft"] for r in _load_jsonl(ROOT / "artifacts/predictions_for_rating.jsonl")}
@@ -142,7 +150,7 @@ def run(out_path: Path = ROOT / "artifacts/judge_agreement_report.json") -> dict
         "length_decoy": agreement_report(human, length_scores, "length_only_decoy"),
         "random_decoy": agreement_report(human, random_scores, "random_decoy"),
         "position_bias_flip_rate": position_bias_flip_rate(judge_scores, swapped),
-        "note": "judge-human agreement above is the ceiling on every reply-quality number reported elsewhere.",
+        "note": "Interpret agreement according to reference_source. AI references are not human validation.",
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2))

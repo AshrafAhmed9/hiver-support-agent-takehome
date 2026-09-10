@@ -1,5 +1,14 @@
 # Hiver take-home implementation plan
 
+**Labeling amendment (2026-09-10):** The user authorized AI-assigned labels with
+explicit disclosure. The current run produces 150 train, 60 dev and 200 challenge
+reference labels in `data/labels/`, recording `label_source: "ai"`, model ID,
+rationale, uncertainty and `human_reviewed: false`. Earlier human-labeling and
+judge–human claims below remain original targets, not completed work. AI reference
+labels do not establish human agreement. The existing challenge sampling and
+direct-exchange extraction also differ from the planned final evaluation design;
+see `data/labels/README.md` before interpreting any numbers.
+
 Status: reviewed specification; implementation and results do not yet exist. The repository currently contains only this plan. Optimize for evidence, a small runnable system, and code Ashraf can explain and modify live. No plan can guarantee a shortlist or offer.
 
 ## 1. Objective and boundaries

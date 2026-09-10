@@ -1,5 +1,8 @@
 # Decision log
 
+Historical implementation notes, with labeling provenance corrected below.
+Some entries describe intended architecture rather than completed verification;
+the current limitations in `data/labels/README.md` take precedence for evaluation.
 Non-obvious decisions made while building this, and what each one gave up.
 See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full spec these
 decisions implement.
@@ -7,47 +10,41 @@ decisions implement.
 1. **Brand chosen by a scripted, pre-declared scoring pass, not by hand.**
    `src/data.py shortlist` ranks brands by outbound volume; a third criterion
    (a regex/length heuristic for "DM us"-style deflection replies) is scored
-   *before* any manual review. AppleSupport, the largest brand in the
-   dataset, was never a serious candidate for this reason — its replies are
-   overwhelmingly deflection to a private channel, which would starve the
-   grounded-drafting task of real resolution content. Gave up: a brand with
-   more raw volume than SpotifyCares.
+   before inspection of sample conversations. AmazonHelp had the largest
+   outbound volume in the computed shortlist. The shortlist heuristic alone
+   does not establish resolution quality. Gave up: choosing solely by volume.
 
 2. **Selected SpotifyCares after reading 30 early-window conversations per
    shortlisted brand, not on the scoring pass alone.** The heuristic score is
-   noisy at the message level; a human read the actual samples in
-   `reports/brand_review_samples/` before committing. Gave up: a fully
-   automated selection with no human-in-the-loop check.
+   noisy at the message level; an AI assistant inspected examples in
+   `reports/brand_review_samples/` before selecting the brand. A complete
+   independent human review is not recorded. Gave up: purely automatic selection.
 
 3. **Chronological split (60/20/20 train/dev/test_pool), not random.**
-   Random splitting would leak near-duplicate, contemporaneous tweets into
-   the retrieval corpus and inflate every groundedness number — the retriever
-   would find a near-copy of the exact eval item. Split at the connected-
-   component level so no conversation straddles a boundary. Gave up: a larger
-   effective training corpus, since the historical corpus can't include
-   anything from the eval window.
+   Temporal ordering limits look-ahead. The current extractor splits direct
+   exchanges; full connected-component isolation and corpus-wide near-duplicate
+   exclusion still need implementation/verification. Do not claim those
+   guarantees from the present labels. Gave up: using later-period examples
+   in the training corpus.
 
 4. **Golden-set candidates sampled only from `test_pool`, the latest
-   chronological third.** Enforces that the retrieval corpus (`train`) is
+   chronological 20%.** Enforces that the retrieval corpus (`train`) is
    temporally prior to everything being evaluated. Gave up: being able to use
    the full dataset for golden-set sampling.
 
-5. **Three different model families for generator / judge / pre-annotator**
-   (Groq gpt-oss / Gemini 2.5 Pro / Groq Qwen). If the pre-annotator shared a
-   family with the generator, golden labels would be biased toward the
-   system under evaluation. If the judge shared a family with the generator,
-   self-preference bias becomes an unanswerable objection. Gave up: some
-   convenience — Groq and Gemini have different SDKs, cache formats, and
-   rate limits to manage.
+5. **Preserve per-item model provenance when quotas force a model change.**
+   Initial Qwen labels are archived separately. The main reference-label run
+   uses Gemini 2.5 Flash, Gemini 3 Flash Preview and Qwen 3.8 27B, with counts in
+   the manifest. The Gemini portion shares a family with the configured judge. Gave up: a uniform
+   annotator and the originally intended three-family separation. Different
+   families would not by themselves prove unbiased evaluation anyway.
 
-6. **Golden-set labelling is hybrid, not pure-human or pure-model, and the
-   split is disclosed.** 150 of 200 items show a pre-annotator suggestion
-   the human accepts or overrides; 50 are labelled blind with no suggestion.
-   Comparing human-vs-suggestion agreement on the suggested half against the
-   blind half gives a measured anchoring-bias number instead of an assumed
-   one. Gave up: a cleaner "100% independently human-labelled" claim, in
-   exchange for being able to quantify how much the process itself biased
-   the ground truth.
+6. **Reference labels are AI-assigned with explicit provenance.** The user
+   authorized model labeling after discussing disclosure. `src/ai_label.py`
+   writes model/provider, rationale, uncertainty and `human_reviewed: false`
+   on each train/dev/evaluation label. Old suggestions are not shown to this
+   annotator. No human label session or measured anchoring effect occurred.
+   Gave up: independent human ground truth and any judge–human agreement claim.
 
 7. **`not_a_support_request` is a mandatory taxonomy bucket, not folded into
    `other`.** TF-IDF/KMeans clustering during taxonomy discovery
@@ -57,12 +54,10 @@ decisions implement.
    these into `other` would force-fit noise as a real support intent
    everywhere downstream. Gave up: taxonomy simplicity.
 
-8. **Clustering is a discovery aid; the taxonomy itself is hand-written.**
-   `src/taxonomy.py` prints cluster exemplars; a human then wrote
-   `data/golden/codebook.md` with definitions and a near-miss for each
-   intent. "I ran k-means and used the clusters as my labels" is a weak
-   answer to a live code-review question. Gave up: the speed of taking
-   cluster IDs as the taxonomy directly.
+8. **Clustering is a discovery aid; the taxonomy is AI-authored.**
+   `src/taxonomy.py` prints training exemplars. The working codebook defines
+   intent boundaries and near-misses separately from cluster IDs. Independent
+   human validation is not recorded. Gave up: accepting cluster IDs directly.
 
 9. **Deterministic post-hoc guardrails, not prompt instructions, gate
    unsupported commitments.** `src/policy.py` regex-matches for
@@ -89,12 +84,11 @@ decisions implement.
     Gave up: a cleaner "our system beats every baseline on every metric"
     narrative.
 
-12. **The TF-IDF intent classifier (used both as a baseline and as one
-    confidence signal for routing) is fit on pre-annotator-labelled
-    train/dev data, never on the golden set.** Fitting a confidence combiner
-    on the same data it's evaluated against is the most likely way to
-    accidentally inflate the headline number. Gave up: a slightly stronger
-    baseline classifier, in exchange for a defensible train/eval boundary.
+12. **Separate AI training, development and evaluation label files.**
+    The 150 training labels are available for classifier fitting; development
+    labels are for development diagnostics, and challenge labels for final
+    comparison. Label generation does not fit the classifier or tune it on
+    the challenge set. Gave up: using all 410 labels for training.
 
 13. **Embeddings fall back to pure scikit-learn (TF-IDF + TruncatedSVD)
     if a neural encoder can't run.** System Python here is 3.14, where torch
