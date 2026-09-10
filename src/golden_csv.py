@@ -191,12 +191,80 @@ def import_csv() -> None:
         print(f"Intent override rate on suggested items: {n_overridden_intent}/{n_suggested}")
 
 
+def accept_all_suggested() -> None:
+    """Bulk-writes the 150 non-blind candidates as golden labels, using the
+    pre-annotator's suggestion verbatim for all three fields.
+
+    This is NOT the same claim as per-item TUI review: it is disclosed as
+    `bulk_accepted: True` in both golden_v1.jsonl and labeling_log.jsonl so
+    the report can state plainly how these 150 were produced (annotator read
+    the full set once and confirmed agreement, rather than confirming each
+    item interactively). The 50 blind items are untouched by this function —
+    they still require `label_tui.py --blind-only`, since there is no
+    suggestion to bulk-accept for them.
+    """
+    candidates = _load_jsonl(CANDIDATES_PATH)
+    non_blind = [c for c in candidates if not c.get("blind")]
+    existing_golden = {r["id"]: r for r in (_load_jsonl(GOLDEN_PATH) if GOLDEN_PATH.exists() else [])}
+    existing_log = {r["id"]: r for r in (_load_jsonl(LOG_PATH) if LOG_PATH.exists() else [])}
+
+    for record in non_blind:
+        intent = record.get("suggested_intent")
+        should_escalate = record.get("suggested_should_escalate")
+        reason = record.get("suggested_escalate_reason")
+        if intent is None or should_escalate is None or reason is None:
+            print(f"Skipping {record['id']}: missing a suggestion field, run preannotate first.")
+            continue
+        existing_golden[record["id"]] = {
+            "id": record["id"],
+            "thread_id": record["message_id"],
+            "customer_text": record["customer_text"],
+            "context": record.get("context", []),
+            "intent": intent,
+            "secondary_intent": None,
+            "should_escalate": should_escalate,
+            "escalate_reason": reason,
+            "difficulty": record.get("difficulty", "medium"),
+            "blind": False,
+            "label_source": "human",
+            "human_reviewed": True,
+            "bulk_accepted": True,
+        }
+        existing_log[record["id"]] = {
+            "id": record["id"],
+            "suggested_intent": intent,
+            "final_intent": intent,
+            "intent_overridden": False,
+            "suggested_should_escalate": should_escalate,
+            "final_should_escalate": should_escalate,
+            "escalate_overridden": False,
+            "suggested_escalate_reason": reason,
+            "final_escalate_reason": reason,
+            "reason_overridden": False,
+            "blind": False,
+            "seconds": None,
+            "bulk_accepted": True,
+        }
+
+    GOLDEN_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with GOLDEN_PATH.open("w", encoding="utf-8") as handle:
+        for record in existing_golden.values():
+            handle.write(json.dumps(record) + "\n")
+    with LOG_PATH.open("w", encoding="utf-8") as handle:
+        for record in existing_log.values():
+            handle.write(json.dumps(record) + "\n")
+    print(f"Bulk-accepted {len(non_blind)} non-blind items -> {GOLDEN_PATH}")
+    print("The 50 blind items still need: uv run python -m src.label_tui --blind-only")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=["export", "import"])
+    parser.add_argument("action", choices=["export", "import", "accept-suggested"])
     args = parser.parse_args()
     if args.action == "export":
         export_csv()
+    elif args.action == "accept-suggested":
+        accept_all_suggested()
     else:
         import_csv()
 

@@ -107,7 +107,23 @@ decisions implement.
     in exchange for a reviewer being able to verify results are not
     hand-edited.
 
-15. **No agent framework, vector database, or orchestration layer.**
+16. **The 150 non-blind golden labels were bulk-accepted, not confirmed
+    one-by-one in the TUI.** Ashraf reviewed all 150 pre-annotator
+    suggestions in a CSV export and reported full agreement; rather than
+    re-clicking through each item in the terminal tool, `src/golden_csv.py
+    accept-suggested` writes them directly, tagged `bulk_accepted: True` in
+    both `golden_v1.jsonl` and `labeling_log.jsonl`. This means the
+    resulting 0/150 override rate cannot be distinguished from "the
+    pre-annotator was very accurate" vs. "the review was shallow" — that
+    ambiguity is disclosed in the report rather than presented as a clean
+    result. The 50 blind items (no suggestion exists to bulk-accept) still
+    require `label_tui.py --blind-only` and are the only source of an
+    actual measured override/anchoring signal in this golden set. Gave up:
+    the ability to claim a fully independent, item-by-item human review of
+    all 200 examples — the report says exactly which 150 weren't reviewed
+    that way and why that matters for how much to trust the override rate.
+
+17. **No agent framework, vector database, or orchestration layer.**
     Retrieval is a ~60-line BM25 index; the agent is one structured LLM call
     plus deterministic guardrails. The brief states candidates will be asked
     to explain and modify their own code live — every added dependency is

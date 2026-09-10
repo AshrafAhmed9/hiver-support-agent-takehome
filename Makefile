@@ -31,6 +31,21 @@ preannotate:
 label:
 	uv run python -m src.label_tui
 
+# Only the 50 blind items (no suggestion) — the part that can't be bulk-accepted.
+label-blind-only:
+	uv run python -m src.label_tui --blind-only --resume
+
+# Bulk-accepts the 150 non-blind suggestions verbatim, disclosed as
+# bulk_accepted: True. Still requires label-blind-only for the other 50.
+accept-suggested:
+	uv run python -m src.golden_csv accept-suggested
+
+csv-export:
+	uv run python -m src.golden_csv export
+
+csv-import:
+	uv run python -m src.golden_csv import
+
 # Explicitly AI-assigned references; never human labels.
 label-ai:
 	uv run python -m src.ai_label --provider groq --model qwen/qwen3.8-27b --batch-size 5 --max-output-tokens 1000

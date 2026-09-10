@@ -90,13 +90,15 @@ def _prompt_reason(default_hint: str | None) -> str:
     return input("One-line reason: ").strip()
 
 
-def run_intent_labelling(resume: bool) -> None:
+def run_intent_labelling(resume: bool, blind_only: bool = False) -> None:
     candidates = _load_jsonl(CANDIDATES_PATH)
     if not candidates:
         print(f"No candidates found at {CANDIDATES_PATH}. Run `python -m src.sampling` first.")
         return
     already_done = {r["id"] for r in _load_jsonl(GOLDEN_PATH)} if resume else set()
     remaining = [c for c in candidates if c["id"] not in already_done]
+    if blind_only:
+        remaining = [c for c in remaining if c.get("blind")]
     print(f"{len(remaining)} of {len(candidates)} items remaining.")
 
     for index, record in enumerate(remaining):
@@ -201,11 +203,14 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--reply-rating", action="store_true")
+    parser.add_argument(
+        "--blind-only", action="store_true", help="Only show the 50 blind items (no suggestion)."
+    )
     args = parser.parse_args()
     if args.reply_rating:
         run_reply_rating()
     else:
-        run_intent_labelling(args.resume)
+        run_intent_labelling(args.resume, blind_only=args.blind_only)
 
 
 if __name__ == "__main__":
