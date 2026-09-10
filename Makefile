@@ -27,30 +27,13 @@ candidates:
 preannotate:
 	uv run python -m src.preannotate
 
-# Requires a human. See IMPLEMENTATION_PLAN.md §7.
-label:
-	uv run python -m src.label_tui
-
-# Only the 50 blind items (no suggestion) — the part that can't be bulk-accepted.
-label-blind-only:
-	uv run python -m src.label_tui --blind-only --resume
-
-# Bulk-accepts the 150 non-blind suggestions verbatim, disclosed as
-# bulk_accepted: True. Still requires label-blind-only for the other 50.
-accept-suggested:
-	uv run python -m src.golden_csv accept-suggested
-
 csv-export:
 	uv run python -m src.golden_csv export
 
 csv-import:
 	uv run python -m src.golden_csv import
 
-rate-replies:
-	uv run python -m src.label_tui --reply-rating
-
 # Full pipeline against cached LLM outputs only. No network, no API keys.
-# Not yet runnable end-to-end: blocked on the golden-set labelling session.
 reproduce:
 	uv run python -m src.eval.run_eval
 

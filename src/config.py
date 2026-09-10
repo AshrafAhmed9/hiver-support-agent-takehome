@@ -11,7 +11,7 @@ BRAND = "SpotifyCares"
 
 GENERATOR_MODEL = "openai/gpt-oss-120b"      # Groq — drafts replies
 JUDGE_MODEL = "gemini-2.5-pro"                # Gemini — scores reply quality
-PRE_ANNOTATOR_MODEL = "qwen/qwen3.8-27b"      # Groq (Qwen family) — golden-set label suggestions
+PRE_ANNOTATOR_MODEL = "qwen/qwen3.8-27b"      # Groq (Qwen family) — golden-set label drafts
 
 # Cost model for deriving the escalation threshold (§9.3 / §6 of the plan).
 # Units are arbitrary and relative to each other, not currency.

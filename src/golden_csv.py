@@ -1,22 +1,20 @@
-"""CSV export/import for bulk labelling of the golden set, as an alternative
-to the one-item-at-a-time terminal TUI (src/label_tui.py).
+"""CSV export/import for bulk review of the golden set.
 
-This is still real human labelling — the override signal used for the
-anchoring-bias measurement only needs (suggested vs. final) per item, which
-this preserves. The one thing it doesn't capture is per-item timing, which
-src/label_tui.py logs and this doesn't; that's a minor loss, not a validity
-problem, and is disclosed in the report.
+Export writes one row per candidate with the pre-annotator's draft
+(intent / should_escalate / reason) prefilled into `final_*` columns for
+review. Editing = overwriting the ones you disagree with. Import validates
+every row and writes data/golden/golden_v1.jsonl.
+
+Every finalized record is tagged with an honest provenance field describing
+how it was produced — this is not "written from scratch by a human," it's
+"drafted by a model, reviewed and confirmed/corrected by a human." See
+REPORT.md for why that distinction matters and is disclosed rather than
+hidden.
 
 Workflow:
     uv run python -m src.golden_csv export   # writes data/golden/golden_labelling.csv
-    ... edit the CSV by hand in a spreadsheet app or text editor ...
-    uv run python -m src.golden_csv import   # writes golden_v1.jsonl + labeling_log.jsonl
-
-Export prefills `final_intent`/`final_should_escalate`/`final_escalate_reason`
-with the pre-annotator's suggestion for the 150 non-blind rows, so editing
-them means overwriting the ones you disagree with, not typing from scratch.
-The 50 blind rows are left blank — those must be filled in from scratch, no
-suggestion, by design (see codebook.md's sampling note).
+    ... edit final_intent / final_should_escalate / final_escalate_reason ...
+    uv run python -m src.golden_csv import   # writes golden_v1.jsonl
 """
 
 from __future__ import annotations
@@ -36,7 +34,6 @@ LOG_PATH = ROOT / "data/golden/labeling_log.jsonl"
 
 FIELDNAMES = [
     "id",
-    "blind",
     "difficulty",
     "customer_text",
     "prior_context",
@@ -60,28 +57,27 @@ def export_csv() -> None:
         writer = csv.DictWriter(handle, fieldnames=FIELDNAMES)
         writer.writeheader()
         for record in candidates:
-            blind = bool(record.get("blind"))
             context = " | ".join(turn.get("text", "") for turn in record.get("context") or [])
+            intent = record.get("suggested_intent", "")
+            should_escalate = record.get("suggested_should_escalate", "")
+            reason = record.get("suggested_escalate_reason", "")
             writer.writerow(
                 {
                     "id": record["id"],
-                    "blind": blind,
                     "difficulty": record.get("difficulty", ""),
                     "customer_text": record["customer_text"],
                     "prior_context": context,
-                    "suggested_intent": "" if blind else record.get("suggested_intent", ""),
-                    "suggested_should_escalate": "" if blind else record.get("suggested_should_escalate", ""),
-                    "suggested_escalate_reason": "" if blind else record.get("suggested_escalate_reason", ""),
-                    # Prefilled with the suggestion for non-blind rows so editing = overwriting
-                    # disagreements. Left blank for blind rows — fill in from scratch.
-                    "final_intent": "" if blind else record.get("suggested_intent", ""),
-                    "final_should_escalate": "" if blind else record.get("suggested_should_escalate", ""),
-                    "final_escalate_reason": "" if blind else record.get("suggested_escalate_reason", ""),
+                    "suggested_intent": intent,
+                    "suggested_should_escalate": should_escalate,
+                    "suggested_escalate_reason": reason,
+                    # Prefilled with the draft so editing = overwriting disagreements.
+                    "final_intent": intent,
+                    "final_should_escalate": should_escalate,
+                    "final_escalate_reason": reason,
                 }
             )
-    n_blind = sum(1 for r in candidates if r.get("blind"))
-    print(f"Wrote {len(candidates)} rows to {CSV_PATH} ({n_blind} blind, no suggestion prefilled).")
-    print("Edit final_intent / final_should_escalate / final_escalate_reason for every row,")
+    print(f"Wrote {len(candidates)} rows to {CSV_PATH}.")
+    print("Review/edit final_intent / final_should_escalate / final_escalate_reason for every row,")
     print("then run: uv run python -m src.golden_csv import")
 
 
@@ -125,28 +121,27 @@ def import_csv() -> None:
                 errors.append(f"row {row_num} ({item_id}): final_escalate_reason is empty")
                 continue
 
-            blind = _parse_bool(row["blind"])
             suggested_intent = row["suggested_intent"].strip() or None
             suggested_escalate_raw = row["suggested_should_escalate"].strip()
             suggested_escalate = _parse_bool(suggested_escalate_raw) if suggested_escalate_raw else None
             suggested_reason = row["suggested_escalate_reason"].strip() or None
+
+            intent_overridden = suggested_intent is not None and final_intent != suggested_intent
+            escalate_overridden = suggested_escalate is not None and final_should_escalate != suggested_escalate
+            reason_overridden = suggested_reason is not None and final_reason != suggested_reason
 
             log_records.append(
                 {
                     "id": item_id,
                     "suggested_intent": suggested_intent,
                     "final_intent": final_intent,
-                    "intent_overridden": (not blind) and suggested_intent is not None and final_intent != suggested_intent,
+                    "intent_overridden": intent_overridden,
                     "suggested_should_escalate": suggested_escalate,
                     "final_should_escalate": final_should_escalate,
-                    "escalate_overridden": (
-                        (not blind) and suggested_escalate is not None and final_should_escalate != suggested_escalate
-                    ),
+                    "escalate_overridden": escalate_overridden,
                     "suggested_escalate_reason": suggested_reason,
                     "final_escalate_reason": final_reason,
-                    "reason_overridden": (not blind) and suggested_reason is not None and final_reason != suggested_reason,
-                    "blind": blind,
-                    "seconds": None,  # not tracked in the CSV workflow, unlike the TUI
+                    "reason_overridden": reason_overridden,
                 }
             )
             golden_records.append(
@@ -160,9 +155,13 @@ def import_csv() -> None:
                     "should_escalate": final_should_escalate,
                     "escalate_reason": final_reason,
                     "difficulty": source.get("difficulty", "medium"),
-                    "blind": blind,
-                    "label_source": "human",
+                    # Honest provenance: drafted by a model, reviewed/confirmed or
+                    # corrected by a human. Not "written from scratch by a human."
+                    "label_source": "ai_drafted_human_reviewed",
                     "human_reviewed": True,
+                    "intent_overridden": intent_overridden,
+                    "escalate_overridden": escalate_overridden,
+                    "reason_overridden": reason_overridden,
                 }
             )
 
@@ -185,86 +184,22 @@ def import_csv() -> None:
             handle.write(json.dumps(record) + "\n")
 
     n_overridden_intent = sum(1 for r in log_records if r["intent_overridden"])
-    n_suggested = sum(1 for r in log_records if not r["blind"])
+    n_overridden_escalate = sum(1 for r in log_records if r["escalate_overridden"])
+    n_overridden_reason = sum(1 for r in log_records if r["reason_overridden"])
     print(f"Imported {len(golden_records)} labelled items -> {GOLDEN_PATH}")
-    if n_suggested:
-        print(f"Intent override rate on suggested items: {n_overridden_intent}/{n_suggested}")
-
-
-def accept_all_suggested() -> None:
-    """Bulk-writes the 150 non-blind candidates as golden labels, using the
-    pre-annotator's suggestion verbatim for all three fields.
-
-    This is NOT the same claim as per-item TUI review: it is disclosed as
-    `bulk_accepted: True` in both golden_v1.jsonl and labeling_log.jsonl so
-    the report can state plainly how these 150 were produced (annotator read
-    the full set once and confirmed agreement, rather than confirming each
-    item interactively). The 50 blind items are untouched by this function —
-    they still require `label_tui.py --blind-only`, since there is no
-    suggestion to bulk-accept for them.
-    """
-    candidates = _load_jsonl(CANDIDATES_PATH)
-    non_blind = [c for c in candidates if not c.get("blind")]
-    existing_golden = {r["id"]: r for r in (_load_jsonl(GOLDEN_PATH) if GOLDEN_PATH.exists() else [])}
-    existing_log = {r["id"]: r for r in (_load_jsonl(LOG_PATH) if LOG_PATH.exists() else [])}
-
-    for record in non_blind:
-        intent = record.get("suggested_intent")
-        should_escalate = record.get("suggested_should_escalate")
-        reason = record.get("suggested_escalate_reason")
-        if intent is None or should_escalate is None or reason is None:
-            print(f"Skipping {record['id']}: missing a suggestion field, run preannotate first.")
-            continue
-        existing_golden[record["id"]] = {
-            "id": record["id"],
-            "thread_id": record["message_id"],
-            "customer_text": record["customer_text"],
-            "context": record.get("context", []),
-            "intent": intent,
-            "secondary_intent": None,
-            "should_escalate": should_escalate,
-            "escalate_reason": reason,
-            "difficulty": record.get("difficulty", "medium"),
-            "blind": False,
-            "label_source": "human",
-            "human_reviewed": True,
-            "bulk_accepted": True,
-        }
-        existing_log[record["id"]] = {
-            "id": record["id"],
-            "suggested_intent": intent,
-            "final_intent": intent,
-            "intent_overridden": False,
-            "suggested_should_escalate": should_escalate,
-            "final_should_escalate": should_escalate,
-            "escalate_overridden": False,
-            "suggested_escalate_reason": reason,
-            "final_escalate_reason": reason,
-            "reason_overridden": False,
-            "blind": False,
-            "seconds": None,
-            "bulk_accepted": True,
-        }
-
-    GOLDEN_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with GOLDEN_PATH.open("w", encoding="utf-8") as handle:
-        for record in existing_golden.values():
-            handle.write(json.dumps(record) + "\n")
-    with LOG_PATH.open("w", encoding="utf-8") as handle:
-        for record in existing_log.values():
-            handle.write(json.dumps(record) + "\n")
-    print(f"Bulk-accepted {len(non_blind)} non-blind items -> {GOLDEN_PATH}")
-    print("The 50 blind items still need: uv run python -m src.label_tui --blind-only")
+    print(
+        f"Override rates: intent {n_overridden_intent}/{len(log_records)}, "
+        f"escalate {n_overridden_escalate}/{len(log_records)}, "
+        f"reason {n_overridden_reason}/{len(log_records)}"
+    )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=["export", "import", "accept-suggested"])
+    parser.add_argument("action", choices=["export", "import"])
     args = parser.parse_args()
     if args.action == "export":
         export_csv()
-    elif args.action == "accept-suggested":
-        accept_all_suggested()
     else:
         import_csv()
 

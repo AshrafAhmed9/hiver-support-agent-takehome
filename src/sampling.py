@@ -9,9 +9,8 @@ This module never assigns final labels. It does two cheap, non-LLM things:
 2. A stratified, seeded sample from the held-out test_pool split, with hard
    /ambiguous cases (low nearest-centroid margin) oversampled.
 
-The pre-annotator LLM suggestion (shown to the human labeller for 150 of the
-200 items, per src/label_tui.py) is a separate, later step — kept separate so
-this module has no LLM dependency and is trivially testable.
+Labelling itself is a separate, later step — kept separate so this module has
+no LLM dependency and is trivially testable.
 """
 
 from __future__ import annotations
@@ -125,12 +124,17 @@ HARD_HINT_RE = re.compile(r"\?|\bbut\b|\bhowever\b|\band also\b", re.IGNORECASE)
 
 def build_candidate_pool(
     pool_path: Path = TEST_POOL_PATH,
-    per_intent: int = 20,
+    per_intent: int = 25,
     hard_bonus: int = 6,
     seed: int = RANDOM_SEED,
 ) -> list[dict]:
     """Stratified sample: `per_intent` per bucket, plus `hard_bonus` extra
-    low-margin (ambiguous) items per bucket. Yields ~200 for 10 intents."""
+    low-margin (ambiguous) items per bucket. Yields ~250 for 10 intents.
+
+    per_intent only extends the margin-sorted "confident" prefix per intent
+    (hard_bonus is unchanged), so raising it from 20 to 25 is a superset of
+    the previous 200-item pool for the same seed — existing labels for those
+    200 IDs stay valid, this just adds ~50 more."""
     records = [json.loads(line) for line in pool_path.open(encoding="utf-8") if line.strip()]
     vectorizer, centroids, intents = fit_pseudo_labeller()
 

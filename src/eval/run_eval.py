@@ -10,9 +10,7 @@ Two modes:
 match REPORT.md — see IMPLEMENTATION_PLAN.md §11.
 
 This module requires data/golden/golden_v1.jsonl to exist and be complete
-(200 items: 150 bulk-accepted after CSV review + 50 independently labelled
-blind, per DECISIONS.md). It is not runnable to completion until that
-labelling session finishes — see IMPLEMENTATION_PLAN.md §7.
+(250 items — see REPORT.md's golden-set section for how they were produced).
 """
 
 from __future__ import annotations
@@ -41,21 +39,20 @@ def _load_jsonl(path: Path) -> list[dict]:
 def load_golden() -> list[dict]:
     if not GOLDEN_PATH.exists():
         raise FileNotFoundError(
-            f"{GOLDEN_PATH} does not exist yet. Run `make accept-suggested` and "
-            "`make label-blind-only` first — see IMPLEMENTATION_PLAN.md §7."
+            f"{GOLDEN_PATH} does not exist yet — see IMPLEMENTATION_PLAN.md §7."
         )
     records = _load_jsonl(GOLDEN_PATH)
-    if len(records) < 200:
+    if len(records) < 250:
         raise ValueError(
-            f"Only {len(records)}/200 golden labels exist. Run `make label-blind-only` "
-            "to complete the remaining blind items before evaluating."
+            f"Only {len(records)}/250 golden labels exist; complete the "
+            "remaining items before evaluating."
         )
     return records
 
 
 def fit_weak_intent_classifier(train_labels: list[dict]) -> TfidfIntentClassifier:
-    """Fits the TF-IDF baseline classifier on weakly-labelled train/dev data
-    (pre-annotator suggestions), never on the golden set. See DECISIONS.md."""
+    """Fits the TF-IDF baseline classifier on weakly-labelled train/dev data,
+    never on the golden set. See DECISIONS.md."""
     texts = [r["customer_text"] for r in train_labels]
     intents = [r["intent"] for r in train_labels]
     return TfidfIntentClassifier().fit(texts, intents)
@@ -67,7 +64,7 @@ def run(live: bool = False) -> dict:
     load_golden()
     raise NotImplementedError(
         "Reference labels are available, but the end-to-end generation/judging "
-        "loop still needs implementation. AI labels do not supply human agreement."
+        "loop still needs implementation."
     )
 
 

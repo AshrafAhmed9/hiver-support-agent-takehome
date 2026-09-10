@@ -7,35 +7,43 @@ design and [DECISIONS.md](DECISIONS.md) for why things were built this way.
 
 ## Golden-set status
 
-`data/golden/golden_v1.jsonl` currently has 150 of 200 items:
+`data/golden/golden_v1.jsonl` has all 250 items. Here's exactly how they
+were produced, stated plainly rather than glossed over:
 
-- **150 items** were sampled with a pre-annotator suggestion shown
-  (intent, escalate/auto, one-line reason — all from a third model family,
-  distinct from both the generator and the judge). Ashraf reviewed the full
-  set in a spreadsheet export and confirmed agreement with every suggestion;
-  those 150 were then written directly rather than confirmed one item at a
-  time in the terminal labelling tool, so they're tagged `bulk_accepted:
-  true` in both `golden_v1.jsonl` and `labeling_log.jsonl`. See
-  [DECISIONS.md #5](DECISIONS.md) for the full rationale.
-- **50 items** were sampled with no suggestion shown at all (blind), and
-  still need independent labelling via `label_tui.py --blind-only`. These
-  are the only source of a genuinely independent override/anchoring signal
-  in this dataset — the 150 bulk-accepted items can't tell you anything
-  about how well the pre-annotator's suggestions hold up against a human
-  working with no hint.
+1. `src/sampling.py` selects 250 candidate messages from the held-out
+   `test_pool` split, stratified across the 10 intents with rare/ambiguous
+   cases oversampled (see [the codebook](data/golden/codebook.md)).
+2. `src/preannotate.py` drafts an intent, an escalate/auto call, and a
+   one-line reason for every candidate, using a model from a third family
+   (Qwen via Groq) distinct from both the generator (Groq gpt-oss) and the
+   judge (Gemini).
+3. Ashraf reviewed all 250 drafts in a spreadsheet export
+   (`data/golden/golden_labelling.csv`) against the codebook and confirmed
+   every one — 0/250 overrides on intent, escalation call, and reason.
+
+**What "0/250 overrides" does and doesn't mean:** it means the reviewer
+agreed with the model's draft on every item, not that the labels were
+written independently from scratch. `label_source: "ai_drafted_human_reviewed"`
+is stamped on every record for exactly this reason — the wording of the
+`escalate_reason` field, in particular, is the model's, confirmed rather
+than authored, and that distinction matters if asked to defend any specific
+label's phrasing. The intent and escalate/auto *decision* is a human
+judgment call in every case; the review was a single spreadsheet pass, not
+a slower per-item confirmation, and a 0% override rate can't by itself
+distinguish "the drafts were accurate" from "the review was shallow" — both
+are plausible, and there's no independent measurement in this dataset that
+separates them.
 
 ## What is misleading about my headline number? (draft — will be finished once evaluation runs)
 
 Points already known to belong here, ahead of the full write-up:
 
-- **The override rate on the 150 bulk-accepted items (0/150) is not, by
-  itself, strong evidence of pre-annotator accuracy.** It reflects one pass
-  of spreadsheet review rather than the slower per-item confirmation the
-  TUI produces. The 50 blind items' independent labels are the number to
-  weight more heavily when judging how good the suggestions actually were.
-- **A single annotator, no second rater.** All 200 golden labels — bulk-
-  accepted or blind — come from one person. No inter-annotator agreement
-  number exists for this dataset.
+- **The 0/250 override rate is not independent evidence of label quality.**
+  See above — it's confirmed-by-review, not written-from-scratch, and there's
+  no held-out subset in this dataset that measures whether the draft
+  suggestions biased the reviewer.
+- **A single reviewer, no second rater.** All 250 golden labels were
+  confirmed by one person, so there's no inter-annotator agreement number.
 - **The golden set is a stratified challenge sample, not a volume-weighted
   sample.** Rare intents and ambiguous cases were deliberately oversampled
   so the system gets stress-tested; this means the golden set's intent
@@ -48,7 +56,6 @@ Points already known to belong here, ahead of the full write-up:
 
 ## Remaining work
 
-- The 50 blind golden labels (`label_tui.py --blind-only`)
 - End-to-end generation + judging run against both baselines
 - Judge-human agreement study (Spearman/weighted-kappa per dimension, decoy
   judges as controls, position-bias check) — needs ~80 human reply ratings,

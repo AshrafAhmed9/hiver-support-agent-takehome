@@ -103,9 +103,8 @@ class BM25CopyBaseline:
 
 
 def load_intent_labels(path: Path) -> list[dict]:
-    """Loads pre-annotator-suggested or human-labelled records with an `intent` field.
+    """Loads records with an `intent` field.
 
-    Used to fit the TF-IDF classifier on data disjoint from the golden set —
-    see src/sampling.py for how these labels are produced.
+    Used to fit the TF-IDF classifier on data disjoint from the golden set.
     """
     return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]

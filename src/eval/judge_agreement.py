@@ -1,6 +1,6 @@
 """Judge validation study: per-dimension human agreement + decoy controls.
 
-Reads data/golden/reply_ratings.jsonl (human ratings from src/label_tui.py
+Reads data/golden/reply_ratings.jsonl (human ratings
 --reply-rating) and the matching judge scores in artifacts/judge_scores.jsonl,
 and reports, per dimension:
 

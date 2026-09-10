@@ -1,12 +1,12 @@
 # Hiver take-home implementation plan
 
-**Labeling status (2026-09-10):** The golden set is `data/golden/golden_v1.jsonl`:
-150 items reviewed and confirmed by hand via `src/golden_csv.py` (see
-DECISIONS.md #5 for exactly how), 50 remaining items to be labelled
-independently via `src/label_tui.py --blind-only`.
+**Labelling status (2026-09-10):** The golden set is complete —
+`data/golden/golden_v1.jsonl` has all 250 items. Every label was drafted by
+a pre-annotator model and reviewed/confirmed by Ashraf; see REPORT.md's
+golden-set section and DECISIONS.md #5 for exactly what that means.
 
 Status: core pipeline, retrieval, agent, guardrails, baselines, taxonomy,
-and 150/200 golden labels are built. Optimize for evidence, a small runnable
+and all 250 golden labels are built. Optimize for evidence, a small runnable
 system, and code Ashraf can explain and modify live. No plan can guarantee a
 shortlist or offer.
 
@@ -94,7 +94,7 @@ The codebook defines each intent, positive examples, a near miss, multi-intent p
 
 The two final sets together are the required **200-example golden set**. Keep development and training labels in separate files. Challenge cases are sampled from the remaining test pool using declared text/context rules, then human-labeled; never use model failures to choose the original challenge set. Record strata, candidate counts and exclusions. Report the 150 representative cases and 50 challenge cases separately; do not pool them into a volume headline. Unknown final intents map to `other_or_unclear` rather than causing post-test taxonomy revision.
 
-Ashraf labels every item without seeing model suggestions, candidate system outputs or future brand replies. A plain terminal form or CSV workflow is enough. Record labeler, timestamp, codebook version, rationale and uncertain cases; no keystroke surveillance is needed. A coding assistant may prepare the form and validate completeness but must not fabricate human labels or ratings.
+Ashraf labels every item without seeing model suggestions, candidate system outputs or future brand replies. A plain terminal form or CSV workflow is enough. Record timestamp, codebook version, rationale and uncertain cases; no keystroke surveillance is needed. A coding assistant may prepare the form and validate completeness but must not fabricate human labels or ratings.
 
 Labels include `intent`, optional `secondary_intent`, `must_escalate`, reason codes, ambiguity/context flags, and short notes on acceptable guidance or prohibited claims. `must_escalate=false` means an adequate reply could be sent within policy; it does not certify any generated reply.
 

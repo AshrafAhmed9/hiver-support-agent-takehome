@@ -1,32 +1,27 @@
-"""Generates pre-annotator label suggestions for the golden candidate pool.
+"""Generates draft label suggestions for the golden candidate pool.
 
 Uses PRE_ANNOTATOR_MODEL (Qwen family via Groq — a different family from both
-the generator and the judge, see src/config.py) to suggest an intent AND an
-escalation call for 150 of the 200 candidates. The other 50 are held blind
-(no suggestion at all, for either field) so the labelling session can measure
-anchoring bias: compare human-vs-suggestion agreement on the suggested items
-against human-vs-suggestion agreement on the blind items (computed post-hoc,
-blind items just never show a suggestion).
+the generator and the judge, see src/config.py) to draft an intent, an
+escalation call, and a one-line reason for every candidate. A human then
+reviews and confirms or overrides every one — see data/golden/README or
+REPORT.md for how that review was actually done.
 
 This step only writes suggestions to data/golden/golden_candidates.jsonl. It
-never writes to golden_v1.jsonl or labeling_log.jsonl — those only get
-written by a human running src/label_tui.py. The human is always free to
-override both fields; the suggestion is a starting point, not an answer.
+never writes to golden_v1.jsonl — that only happens after human review.
 """
 
 from __future__ import annotations
 
 import json
-import random
 from pathlib import Path
 
-from src.config import INTENTS, PRE_ANNOTATOR_MODEL, RANDOM_SEED
+from src.config import INTENTS, PRE_ANNOTATOR_MODEL
 from src.llm import CachedLLM, groq_call_fn
 
 ROOT = Path(__file__).resolve().parents[1]
 CANDIDATES_PATH = ROOT / "data/golden/golden_candidates.jsonl"
 
-PROMPT_TEMPLATE = """You are labelling a customer support tweet sent to @spotifycares with exactly one intent from this fixed list:
+INTENT_PROMPT_TEMPLATE = """You are labelling a customer support tweet sent to @spotifycares with exactly one intent from this fixed list:
 
 {intents}
 
@@ -73,7 +68,7 @@ in plain language a support-ops reviewer would write. No preamble, just the sent
 
 
 def suggest_intent(llm: CachedLLM, text: str) -> str:
-    prompt = PROMPT_TEMPLATE.format(intents="\n".join(f"- {i}" for i in INTENTS), text=text)
+    prompt = INTENT_PROMPT_TEMPLATE.format(intents="\n".join(f"- {i}" for i in INTENTS), text=text)
     response = llm.generate(prompt, {"temperature": 0.0})
     label = response.text.strip().lower().replace(" ", "_")
     return label if label in INTENTS else "other"
@@ -92,33 +87,25 @@ def suggest_reason(llm: CachedLLM, text: str, should_escalate: bool) -> str:
     return response.text.strip().strip('"')
 
 
-def annotate(blind_fraction: float = 0.25, seed: int = RANDOM_SEED, allow_live: bool = True) -> None:
+def annotate(allow_live: bool = True) -> None:
     records = [json.loads(line) for line in CANDIDATES_PATH.open(encoding="utf-8") if line.strip()]
-    rng = random.Random(seed)
-    ids = [r["id"] for r in records]
-    rng.shuffle(ids)
-    n_blind = round(len(ids) * blind_fraction)
-    blind_ids = set(ids[:n_blind])
-
     llm = CachedLLM(PRE_ANNOTATOR_MODEL, groq_call_fn(PRE_ANNOTATOR_MODEL), allow_live=allow_live)
+
+    n_done = 0
     for record in records:
-        record["blind"] = record["id"] in blind_ids
-        if record["blind"]:
-            record["suggested_intent"] = None
-            record["suggested_should_escalate"] = None
-            record["suggested_escalate_reason"] = None
-        else:
-            record["suggested_intent"] = suggest_intent(llm, record["customer_text"])
-            record["suggested_should_escalate"] = suggest_escalate(llm, record["customer_text"])
-            record["suggested_escalate_reason"] = suggest_reason(
-                llm, record["customer_text"], record["suggested_should_escalate"]
-            )
+        if record.get("suggested_intent") is not None:
+            continue  # already annotated (e.g. from the earlier 200-item run)
+        record["suggested_intent"] = suggest_intent(llm, record["customer_text"])
+        record["suggested_should_escalate"] = suggest_escalate(llm, record["customer_text"])
+        record["suggested_escalate_reason"] = suggest_reason(
+            llm, record["customer_text"], record["suggested_should_escalate"]
+        )
+        n_done += 1
 
     with CANDIDATES_PATH.open("w", encoding="utf-8") as handle:
         for record in records:
             handle.write(json.dumps(record) + "\n")
-    n_suggested = sum(1 for r in records if not r["blind"])
-    print(f"Annotated {n_suggested} / {len(records)} candidates. {n_blind} held blind.")
+    print(f"Drafted {n_done} new suggestion(s); {len(records)} candidates total have suggestions.")
 
 
 if __name__ == "__main__":

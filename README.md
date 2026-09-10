@@ -11,11 +11,9 @@ guidance — not proof an issue was resolved, and not current policy. See
 [DECISIONS.md](DECISIONS.md) for the non-obvious calls made along the way.
 
 **Status: in progress.** Data pipeline, retrieval, agent, guardrails,
-baselines, taxonomy, and the golden-set candidate pool are built and tested.
-150 of 200 golden labels are done (reviewed and confirmed by hand — see
-DECISIONS.md #16 for exactly how); the remaining 50 blind items and the
-end-to-end eval run are not yet done. `make reproduce` is not yet runnable
-to completion; run `make test` for what's currently verifiable.
+baselines, taxonomy, and all 250 golden labels are built. The end-to-end
+eval run is not yet done. `make reproduce` is not yet runnable to
+completion; run `make test` for what's currently verifiable.
 
 ## Setup
 
@@ -46,37 +44,34 @@ make test          # thread reconstruction, redaction, policy,
 - `src/baselines.py` — trivial baseline (majority intent, canned reply,
   fixed routing) and simple baseline (TF-IDF+LogReg intent, BM25-copy reply)
 - `src/sampling.py` — stratified golden-set candidate sampling from the
-  held-out `test_pool` split (200 candidates, 10 intents, hard cases
+  held-out `test_pool` split (250 candidates, 10 intents, hard cases
   oversampled)
-- `src/preannotate.py` — pre-annotator label suggestions for the labelling
-  session (Qwen family via Groq — a third model family, distinct from both
-  the generator and the judge)
-- `src/label_tui.py` / `src/golden_csv.py` — the human labelling tools (see
-  below)
+- `src/preannotate.py` / `src/golden_csv.py` — draft labels for every
+  candidate and the spreadsheet review workflow (see below)
 - `src/eval/metrics.py`, `risk_coverage.py`, `judge.py`, `judge_agreement.py`
   — intent/routing metrics with bootstrap CIs, the coverage-at-fixed-safety
   headline calculation, the LLM judge + two decoy judges, and the
   judge-vs-human agreement study
 
-## Golden-set labelling status and how to finish it
+## Golden-set labelling status
 
-```bash
-make csv-export         # already run — data/golden/golden_labelling.csv
-make accept-suggested   # already run — 150/200 reviewed & confirmed by hand
-make label-blind-only   # remaining: 50 items, no suggestion, ~15-20 min
-```
+`data/golden/golden_v1.jsonl` has all 250 items. How they were made, stated
+plainly:
 
-`data/golden/golden_v1.jsonl` currently has 150 of 200 items. Every record
-carries `label_source: "human"` and `human_reviewed: true`; the 150 bulk-
-accepted ones additionally carry `bulk_accepted: true`, meaning they were
-confirmed by reviewing the full suggested set in a spreadsheet rather than
-one-by-one in the terminal tool — disclosed rather than hidden, see
-DECISIONS.md #16. The remaining 50 have no suggestion at all and require
-`make label-blind-only`.
+1. 250 candidates sampled from the held-out `test_pool` split (`src/sampling.py`)
+2. A pre-annotator model (Qwen via Groq — a third family, distinct from the
+   generator and the judge) drafted an intent, an escalate/auto call, and a
+   one-line reason for every candidate (`src/preannotate.py`)
+3. Ashraf reviewed all 250 drafts in a spreadsheet and confirmed every one
+   (`src/golden_csv.py`) — 0/250 overrides
 
-Once all 200 exist, `make live` runs the full pipeline against the real
-APIs; `make reproduce` replays from `artifacts/llm_cache.jsonl` with no
-network or keys and regenerates every number in `REPORT.md`.
+Every record carries `label_source: "ai_drafted_human_reviewed"`, not plain
+`"human"` — see [REPORT.md](REPORT.md)'s golden-set section for exactly what
+that distinction means and doesn't mean.
+
+`make live` runs the full pipeline against the real APIs; `make reproduce`
+replays from `artifacts/llm_cache.jsonl` with no network or keys and
+regenerates every number in `REPORT.md`.
 
 ## Repo map
 
@@ -85,7 +80,7 @@ src/            pipeline code (see file list above)
 src/eval/       metrics, judge, judge-agreement study, risk-coverage
 data/interim/   SpotifyCares_{train,dev,test_pool}.jsonl (chronological split)
 data/golden/    codebook.md, golden_candidates.jsonl, golden_labelling.csv,
-                golden_v1.jsonl (150/200), labeling_log.jsonl
+                golden_v1.jsonl (250/250)
 reports/        brand_selection.md, brand_review_samples/, taxonomy_clusters.txt
 artifacts/      cached LLM outputs, results.json (pending)
 tests/          tests covering every module above

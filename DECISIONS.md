@@ -29,17 +29,20 @@ decisions implement.
    temporally prior to everything being evaluated. Gave up: being able to use
    the full dataset for golden-set sampling.
 
-5. **The golden set is hybrid: CSV-reviewed bulk-accept for 150 items,
-   fully independent for the other 50.** Ashraf reviewed all 150 non-blind
-   pre-annotator suggestions in a spreadsheet and confirmed agreement;
-   `src/golden_csv.py accept-suggested` writes those directly, tagged
-   `bulk_accepted: true` so the report can state plainly that they weren't
-   confirmed one-by-one in the terminal tool. The 50 blind items have no
-   suggestion to review at all — `label_tui.py --blind-only` — and are the
-   only source of a real, measured override/anchoring signal in this
-   dataset. Gave up: a uniform "every item was reviewed the same way" story,
-   in exchange for disclosing exactly how much independent signal the
-   override rate actually carries.
+5. **All 250 golden labels are AI-drafted, human-reviewed — disclosed as
+   such, not presented as independently hand-written.** A pre-annotator
+   model (Qwen, a third family distinct from the generator and judge)
+   drafts intent, escalate/auto, and a one-line reason for every candidate;
+   Ashraf reviewed all 250 in a spreadsheet and confirmed every one (0/250
+   overrides). Every record is tagged `label_source:
+   "ai_drafted_human_reviewed"` rather than plain `"human"`, because the
+   phrasing of the reason field in particular is the model's, confirmed
+   rather than authored — and that's a meaningful difference if asked to
+   defend a specific label's wording. Gave up: the cleaner but less accurate
+   claim of a fully from-scratch human-written golden set, and the ability
+   to measure independent human/suggestion agreement (no held-out blind
+   subset exists in the final version) — both traded for review speed on a
+   250-item set within the time actually available.
 
 6. **`not_a_support_request` is a mandatory taxonomy bucket, not folded into
    `other`.** TF-IDF/KMeans clustering during taxonomy discovery

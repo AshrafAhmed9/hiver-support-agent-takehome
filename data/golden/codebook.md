@@ -93,18 +93,24 @@ everywhere downstream.
 ## Sampling note for the golden set (§7 of the plan)
 
 Golden examples are drawn **only** from `data/interim/SpotifyCares_test_pool.jsonl`
-(the latest 20% of the chronological episode split — never part of the retrieval corpus
-or by the pre-annotator's few-shot examples). Sampling is stratified across
-the 10 intents above using a first-pass cheap classifier (TF-IDF nearest
-centroid against the codebook examples) purely to stratify, not to label —
-reference labels now come from `src/ai_label.py` and are explicitly AI-assigned. Rare
-intents (`account_data_or_privacy`, `device_or_platform_compatibility`) and
-messages the stratifier is least confident about are oversampled so the
-golden set stresses the system instead of confirming it.
+(the latest 20% of the chronological episode split — never part of the retrieval corpus).
+Sampling is stratified across the 10 intents above using a first-pass cheap
+classifier (TF-IDF nearest centroid against the codebook examples) purely to
+stratify candidate selection, not to label. Rare intents
+(`account_data_or_privacy`, `device_or_platform_compatibility`) and messages
+the stratifier is least confident about are oversampled so the golden set
+stresses the system instead of confirming it.
+
+**Labelling itself is a separate step from sampling.** A pre-annotator model
+(Qwen, via Groq — a different family from both the generator and the judge)
+drafts an intent, an escalation call, and a one-line reason for every
+candidate. Ashraf reviewed all 250 drafts against this codebook and confirmed
+them. See REPORT.md for the override rate and what that number does and
+doesn't tell you.
 
 The current pool is a legacy stratified challenge set, not the 150-random /
 50-challenge sample proposed in the revised plan. It cannot estimate ordinary
 inbound-volume coverage. The source partition is the latest 20%, not a third.
 Current extraction uses direct exchanges, so full connected-component isolation
-and near-duplicate removal have not been established. AI labels do not repair
-those sampling limitations. See `data/labels/README.md` for current provenance.
+and near-duplicate removal have not been established. Hand labelling does not
+repair those sampling limitations.
