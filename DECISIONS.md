@@ -100,3 +100,22 @@ decisions implement.
     something to defend in that conversation, and none of LangChain /
     LlamaIndex / a vector DB service solves a problem this dataset actually
     has at this scale. Gave up: looking more "sophisticated" on paper.
+
+14. **The judge model was picked under real API constraints, not chosen for
+    validated quality — and the judge-agreement study is what caught that.**
+    The original design used Gemini; its free tier caps at 20 requests/day
+    per model, project-wide, discovered when the eval needed 1,000+ judge
+    calls (60 items × two systems × the agreement study × the position-bias
+    re-judging pass). Moved to `groq/compound` next — a genuinely distinct
+    model family, but a slow, tool-using agentic model capped at 30
+    requests/minute, impractical for a batch job this size. Landed on
+    `allam-2-7b` (SDAIA/IBM): a plain fast chat model, no rate-limit wall
+    hit in testing, still a different family from the generator
+    (`openai/gpt-oss-120b`). No candidate judge model was evaluated for
+    judging quality before this was picked — the judge-agreement study
+    (REPORT.md) was the first real check, and it came back weak (loses to a
+    length-only decoy on 3 of 4 dimensions, zero rank correlation with human
+    ratings on safety). Gave up: a judge chosen because it's good, in
+    exchange for one that survived three consecutive infra constraints —
+    disclosed as a real limitation rather than presented as a considered
+    choice.
