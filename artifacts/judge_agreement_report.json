@@ -41,6 +41,6 @@
     "reference_source": "human",
     "agreement_type": "judge\u2013human agreement"
   },
-  "position_bias_flip_rate": 0.5666666666666667,
+  "position_bias_flip_rate": 0.26666666666666666,
   "note": "Interpret agreement according to reference_source. AI references are not human validation."
 }

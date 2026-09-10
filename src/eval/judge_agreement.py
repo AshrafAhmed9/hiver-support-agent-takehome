@@ -126,8 +126,16 @@ def agreement_report(human: list[dict], scorer: list[dict], scorer_name: str) ->
 
 def position_bias_flip_rate(original: list[dict], swapped: list[dict]) -> float:
     """Fraction of items where any dimension's score changed after swapping
-    evidence order in the judge prompt."""
-    orig_by_id = {o["item_id"]: o["scores"] for o in original}
+    evidence order in the judge prompt.
+
+    `original` is judge_scores.jsonl, which holds one row per (item, system)
+    sharing the bare item_id (agent and simple_bm25_copy both score against
+    the same golden id). The re-judged `swapped` set is agent-only, so the
+    lookup below must filter to system == "agent" before collapsing to a
+    plain id dict — otherwise the agent's swapped score gets compared
+    against the *simple baseline's* original score for that id (last write
+    wins), which isn't a reorder of the same reply at all."""
+    orig_by_id = {o["item_id"]: o["scores"] for o in original if o.get("system") == "agent"}
     flips = 0
     n = 0
     for item in swapped:
