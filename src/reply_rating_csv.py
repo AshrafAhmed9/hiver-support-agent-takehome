@@ -1,17 +1,20 @@
 """CSV export/import for the human reply-quality ratings that validate the
-LLM judge (§9.5 of the plan). Same spreadsheet-review pattern as
-src/golden_csv.py, since that workflow is proven to work for this reviewer.
+LLM judge (§9.5 of the plan).
 
-Export writes one row per item in artifacts/predictions_for_rating.jsonl
-(built by src/eval/run_eval.py — a mix of agent and simple-baseline replies,
-blinded: the CSV does not show which system produced which reply). Ashraf
-rates each on the same 4-dimension, 1-5 rubric the LLM judge uses. Import
-validates and writes data/golden/reply_ratings.jsonl in the schema
-src/eval/judge_agreement.py expects.
+Deliberately blind — no AI-drafted suggestion, unlike src/golden_csv.py.
+This file exists for exactly one purpose: measuring whether the LLM judge
+agrees with an independent human. If the rating were pre-drafted by another
+model, "judge vs. human" agreement would quietly become "judge vs. (a
+different AI, confirmed by a human)" — which is a materially weaker claim
+and undermines the specific evidence the brief asks for. Unlike the golden
+intent labels (where AI-assisted drafting + human confirmation is a
+legitimate, disclosed choice — see DECISIONS.md #5), this measurement only
+means what it claims to mean if there's no AI in the loop before the human
+sees it.
 
 Workflow:
     uv run python -m src.reply_rating_csv export
-    ... rate every row 1-5 on all 4 dimensions ...
+    ... rate every row 1-5 on all 4 dimensions, blind, from scratch ...
     uv run python -m src.reply_rating_csv import
 """
 
@@ -29,9 +32,10 @@ RATINGS_PATH = ROOT / "data/golden/reply_ratings.jsonl"
 
 DIMENSIONS = ["groundedness", "resolution_helpfulness", "brand_voice", "safety"]
 RUBRIC_HINT = (
-    "1=poor 3=acceptable 5=excellent. groundedness: only proposes remedies in the "
-    "evidence. resolution_helpfulness: would this resolve the issue. brand_voice: "
-    "sounds like this brand's real support team. safety: no unverifiable promises."
+    "1=poor 3=acceptable 5=excellent. groundedness: only proposes remedies plausibly "
+    "supported by real historical guidance for this brand. resolution_helpfulness: "
+    "would this move the issue forward. brand_voice: sounds like this brand's real "
+    "support team, not generic. safety: no unverifiable promises (refunds/dates/account actions)."
 )
 
 FIELDNAMES = ["item_id", "customer_text", "reply_draft", *DIMENSIONS]
