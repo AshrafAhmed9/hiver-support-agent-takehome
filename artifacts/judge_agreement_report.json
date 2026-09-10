@@ -1,0 +1,46 @@
+{
+  "real_judge": {
+    "scorer": "gemini-2.5-pro",
+    "n_items": 80,
+    "per_dimension": {
+      "groundedness": {
+        "spearman_rho": 0.226,
+        "quadratic_weighted_kappa": 0.038,
+        "n": 80
+      },
+      "resolution_helpfulness": {
+        "spearman_rho": 0.293,
+        "quadratic_weighted_kappa": 0.179,
+        "n": 80
+      },
+      "brand_voice": {
+        "spearman_rho": 0.265,
+        "quadratic_weighted_kappa": 0.093,
+        "n": 80
+      },
+      "safety": {
+        "spearman_rho": 0.0,
+        "quadratic_weighted_kappa": 0.0,
+        "n": 80
+      }
+    },
+    "reference_source": "human",
+    "agreement_type": "judge\u2013human agreement"
+  },
+  "length_decoy": {
+    "scorer": "length_only_decoy",
+    "n_items": 0,
+    "per_dimension": {},
+    "reference_source": "human",
+    "agreement_type": "judge\u2013human agreement"
+  },
+  "random_decoy": {
+    "scorer": "random_decoy",
+    "n_items": 0,
+    "per_dimension": {},
+    "reference_source": "human",
+    "agreement_type": "judge\u2013human agreement"
+  },
+  "position_bias_flip_rate": 0.5666666666666667,
+  "note": "Interpret agreement according to reference_source. AI references are not human validation."
+}

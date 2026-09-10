@@ -86,20 +86,34 @@ def quadratic_weighted_kappa(x: list[int], y: list[int], min_rating: int = 1, ma
     return float(1 - observed_weighted / expected_weighted)
 
 
+def _match_key(item_id: str, system: str) -> tuple[str, str]:
+    """Rating-pool item_ids for the simple baseline carry a "_simple" suffix
+    (added in run_eval.py so agent/simple rows sharing a golden id stay
+    unique in the flat rating CSV); judge_scores.jsonl never adds it. Both
+    files do carry `system`, so match on (base_id, system) rather than the
+    raw item_id — matching on item_id alone silently collapses the two
+    systems' judge scores for a shared id (last-write-wins) and drops every
+    simple-baseline row as an unmatched id."""
+    base_id = item_id[: -len("_simple")] if item_id.endswith("_simple") else item_id
+    return (base_id, system)
+
+
 def agreement_report(human: list[dict], scorer: list[dict], scorer_name: str) -> dict:
-    """human, scorer: lists of {"item_id": ..., "scores": {dim: 1-5}} aligned by item_id."""
-    scorer_by_id = {s["item_id"]: s["scores"] for s in scorer}
+    """human, scorer: lists of {"item_id": ..., "system": ..., "scores": {dim: 1-5}},
+    aligned by (item_id, system) rather than item_id alone — see _match_key."""
+    scorer_by_key = {_match_key(s["item_id"], s.get("system", "")): s["scores"] for s in scorer}
+    human_by_key = {_match_key(h["item_id"], h.get("system", "")): h["scores"] for h in human}
     report: dict = {"scorer": scorer_name, "n_items": 0, "per_dimension": {}}
     sources = {r.get("rating_source", r.get("label_source", "unknown")) for r in human}
     report["reference_source"] = next(iter(sources)) if len(sources) == 1 else "mixed_or_missing"
     report["agreement_type"] = {
         "human": "judge–human agreement", "ai": "AI–AI agreement"
     }.get(report["reference_source"], "unverified-reference agreement")
-    paired_ids = [h["item_id"] for h in human if h["item_id"] in scorer_by_id]
-    report["n_items"] = len(paired_ids)
+    paired_keys = [k for k in human_by_key if k in scorer_by_key]
+    report["n_items"] = len(paired_keys)
     for dim in DIMENSIONS:
-        h_vals = [next(h["scores"][dim] for h in human if h["item_id"] == i) for i in paired_ids]
-        s_vals = [scorer_by_id[i][dim] for i in paired_ids]
+        h_vals = [human_by_key[k][dim] for k in paired_keys]
+        s_vals = [scorer_by_key[k][dim] for k in paired_keys]
         if not h_vals:
             continue
         report["per_dimension"][dim] = {
