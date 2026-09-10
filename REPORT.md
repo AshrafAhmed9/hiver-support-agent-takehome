@@ -167,7 +167,7 @@ but it does mean "raise the cost ratio further" stops moving the number.
   A reader who only sees "1.7%" without this context would wrongly conclude
   the agent is broken rather than that the safety bar is set high.
 - **The LLM judge that "safe" is partly defined against is itself weakly
-  **, see below. The safe-auto-reply-rate in the coverage table
+  validated, see below.** The safe-auto-reply-rate in the coverage table
   is computed using judge scores (`score.mean() >= 4.0`), and the judge's
   agreement with my own blind ratings is weak. So "100% safe-auto-reply
   rate" at 1.7% coverage is a real number from a real pipeline, but it
@@ -179,7 +179,7 @@ but it does mean "raise the cost ratio further" stops moving the number.
 - **The golden set is a stratified challenge sample, not a volume-weighted
   one.** Rare intents and ambiguous cases were deliberately oversampled so
   the system gets stress-tested. None of the accuracy numbers above should
-  be read as "this is what happens to a random incoming message" : they're
+  be read as "this is what happens to a random incoming message" — they're
   a harder test than that.
 - **Twitter support isn't Hiver's actual product context.** Public, short,
   low-stakes messages, versus the longer, private, higher-stakes email
