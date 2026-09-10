@@ -227,6 +227,43 @@ the coverage number should both be read with this in mind. Reporting this
 plainly is the point of the exercise: a judge that quietly disagreed with
 a human and I didn't check would be worse than an honest weak result.
 
+### Attempted fix: few-shot calibration made it worse
+
+The obvious fix for a judge that's drifting toward generous, uncalibrated
+scores is to show it worked examples: real replies, scored by a human,
+spanning the range from bad to good. I built this (`src/eval/judge_v2.py`)
+using a clean split of the 80 human ratings, 20 held back to build 6
+worked examples spanning the score range, 60 never shown to the judge as
+an example, used only to re-measure agreement, so the test can't grade on
+its own training data. Same evidence-retrieval setup as the original judge,
+re-run live and compared on the identical 60 held-out items against the
+original zero-shot judge's scores on those same items.
+
+**It made every dimension worse, not better:**
+
+| dimension | zero-shot (v1) | few-shot calibrated (v2) |
+|---|---|---|
+| groundedness | +0.275 | -0.133 |
+| resolution helpfulness | +0.226 | +0.125 |
+| brand voice | +0.336 | -0.100 |
+| safety | +0.000 | -0.062 |
+
+(Spearman ρ against human ratings, n=60 for both, same holdout set.)
+
+Two dimensions that were weakly positive went negative. My working
+hypothesis: `allam-2-7b` is a small model (7B parameters), and stuffing 6
+full worked examples plus their scores into the prompt likely overloaded
+its ability to reason about the actual new item in front of it, it may be
+pattern-matching toward whichever example looks most similar rather than
+scoring independently. Few-shot prompting reliably helps larger models;
+it isn't guaranteed to help a small one, and here it didn't.
+
+This is a real, reported failure of an attempted fix, not a workaround
+that quietly disappeared. The honest conclusion: the fix for this judge
+isn't a better prompt on the same small model, it's very likely a larger
+or different judge model entirely. See "what I'd do with one more week."
+Full numbers: `artifacts/judge_agreement_v2_report.json`.
+
 ## Top 5 failure modes
 
 Pulled from the 60-item agent run, real examples, `item_id`s included so
@@ -291,12 +328,13 @@ DM) rather than replies that actually resolved a similar issue, because
 
 ## What I'd do with one more week
 
-1. **Fix or replace the judge before trusting the safety number.** The
-   judge-agreement study is the clearest finding in this report: as
-   configured, the judge doesn't reliably track a human, especially on
-   safety. I'd try a stricter rubric prompt, few-shot calibration examples
-   drawn from my 80 blind ratings, and re-run the agreement study before
-   using judge scores for anything load-bearing.
+1. **Replace the judge model before trusting the safety number.** Few-shot
+   calibration (20 worked examples from my ratings, tested on a clean
+   held-out 60) was the obvious fix, and I built and ran it. It made every
+   dimension worse, not better, most likely because `allam-2-7b` is too
+   small to benefit from that much in-context calibration. The remaining
+   lever is a different, larger judge model, re-validated with the same
+   held-out methodology before it's trusted for anything load-bearing.
 2. **Run the full 250 golden items, not 60.** Needs either a paid Groq tier
    or spreading the run across several days under the free quota. Would
    tighten every confidence interval in this report and make the coverage

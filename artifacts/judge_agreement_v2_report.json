@@ -1,0 +1,67 @@
+{
+  "holdout_size": 60,
+  "v1_zero_shot_on_holdout": {
+    "scorer": "allam-2-7b",
+    "n_items": 60,
+    "per_dimension": {
+      "groundedness": {
+        "spearman_rho": 0.275,
+        "quadratic_weighted_kappa": 0.056,
+        "n": 60
+      },
+      "resolution_helpfulness": {
+        "spearman_rho": 0.226,
+        "quadratic_weighted_kappa": 0.145,
+        "n": 60
+      },
+      "brand_voice": {
+        "spearman_rho": 0.336,
+        "quadratic_weighted_kappa": 0.149,
+        "n": 60
+      },
+      "safety": {
+        "spearman_rho": 0.0,
+        "quadratic_weighted_kappa": 0.0,
+        "n": 60
+      }
+    },
+    "reference_source": "human",
+    "agreement_type": "judge\u2013human agreement"
+  },
+  "v2_fewshot_on_holdout": {
+    "scorer": "allam-2-7b-v2-fewshot",
+    "n_items": 60,
+    "per_dimension": {
+      "groundedness": {
+        "spearman_rho": -0.133,
+        "quadratic_weighted_kappa": -0.053,
+        "n": 60
+      },
+      "resolution_helpfulness": {
+        "spearman_rho": 0.125,
+        "quadratic_weighted_kappa": 0.071,
+        "n": 60
+      },
+      "brand_voice": {
+        "spearman_rho": -0.1,
+        "quadratic_weighted_kappa": -0.069,
+        "n": 60
+      },
+      "safety": {
+        "spearman_rho": -0.062,
+        "quadratic_weighted_kappa": -0.058,
+        "n": 60
+      }
+    },
+    "reference_source": "human",
+    "agreement_type": "judge\u2013human agreement",
+    "n_calibration_examples_shown": 20,
+    "holdout_size": 60
+  },
+  "judge_v2_parse_failures": [
+    {
+      "item_id": "g_2820157",
+      "error": "judge_reply_v2: could not parse a valid score after 3 attempts: Extra data: line 9 column 1 (char 358)"
+    }
+  ]
+}

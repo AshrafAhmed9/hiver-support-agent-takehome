@@ -27,7 +27,7 @@ import random
 from pathlib import Path
 
 from src.config import RANDOM_SEED
-from src.eval.judge import DIMENSIONS, JudgeScore, _parse_json_score
+from src.eval.judge import JudgeScore, _parse_json_score
 from src.llm import CachedLLM
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -157,5 +157,3 @@ def judge_reply_v2(llm: CachedLLM, rubric_v2: str, customer_text: str, evidence:
             last_exc = exc
     raise ValueError(f"judge_reply_v2: could not parse a valid score after {max_attempts} attempts: {last_exc}")
 
-
-DIMENSIONS = DIMENSIONS  # re-exported for convenience

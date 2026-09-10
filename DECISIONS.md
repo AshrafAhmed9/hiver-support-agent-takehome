@@ -119,3 +119,15 @@ decisions implement.
     exchange for one that survived three consecutive infra constraints —
     disclosed as a real limitation rather than presented as a considered
     choice.
+
+15. **Few-shot calibration was tried as a fix for the weak judge, tested
+    honestly on a held-out split, and reported as a failure rather than
+    dropped quietly.** `src/eval/judge_v2.py` splits the 80 human ratings
+    into 20 calibration examples (shown to the judge in-prompt) and 60
+    holdout (never shown, used only to re-measure agreement), so the test
+    can't grade on its own training data. Result: every dimension got
+    worse on the same 60 held-out items, not better — see REPORT.md's
+    "attempted fix" subsection for the full numbers. Working hypothesis:
+    `allam-2-7b` is too small (7B) to benefit from that much in-context
+    calibration. Gave up: a report that only shows fixes that worked, in
+    exchange for one that shows a real attempt and its real result.
