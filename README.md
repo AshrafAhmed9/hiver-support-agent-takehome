@@ -10,10 +10,10 @@ guidance — not proof an issue was resolved, and not current policy. See
 [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full design and
 [DECISIONS.md](DECISIONS.md) for the non-obvious calls made along the way.
 
-**Status: in progress.** Data pipeline, retrieval, agent, guardrails,
-baselines, taxonomy, and all 250 golden labels are built. The end-to-end
-eval run is not yet done. `make reproduce` is not yet runnable to
-completion; run `make test` for what's currently verifiable.
+**Status: eval run complete on a 60-item subsample of the 250-item golden
+set** (Groq's daily token quota doesn't stretch to 250 live generations in
+one sitting — see DECISIONS.md and REPORT.md). `make reproduce` replays that
+run from the committed cache in a few seconds, no network or keys required.
 
 ## Setup
 
